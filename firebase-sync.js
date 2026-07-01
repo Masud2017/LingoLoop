@@ -44,6 +44,33 @@ export function listenDirectMessages(me, friendId, callback) {
   return () => off(location, 'value', handler);
 }
 
+function safePath(value) {
+  return String(value || 'general').replace(/[.#$/[\]]/g, '_');
+}
+
+export async function saveChannelMessage(room, message) {
+  if (!db || !room || !message?.id) return false;
+  await set(ref(db, `channelMessages/${safePath(room)}/${message.id}`), clean({
+    ...message,
+    room,
+    savedAt: serverTimestamp()
+  }));
+  return true;
+}
+
+export function listenChannelMessages(room, callback) {
+  if (!db || !room) return () => {};
+  const location = ref(db, `channelMessages/${safePath(room)}`);
+  const handler = snapshot => {
+    const rows = [];
+    snapshot.forEach(child => rows.push({ id: child.key, ...child.val() }));
+    rows.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    callback(rows.slice(-80));
+  };
+  onValue(location, handler);
+  return () => off(location, 'value', handler);
+}
+
 export async function saveStudySession(uid, session) {
   if (!db || !uid || !session?.id) return false;
   await set(ref(db, `studyHelperSessions/${uid}/${session.id}`), clean({

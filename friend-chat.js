@@ -5,7 +5,9 @@ const emojis=[':)','XD','<3',':D','hug','hmm','wow',':(','fire','spark','yay','+
 let friends=[],activeFriend=null,socket=null,reconnectTimer=null,unread=0,currentChannel=null;
 let blockedFriends=new Set();
 let firebaseSync=null,firebaseThreadKey='',firebaseThreadUnsubscribe=null;
-import('./firebase-sync.js').then(module=>{firebaseSync=module;syncActiveFirebaseThread()}).catch(()=>{firebaseSync=null});
+let firebaseChannelRoom='',firebaseChannelUnsubscribe=null;
+const seenChannelMessages=new Set();
+import('./firebase-sync.js').then(module=>{firebaseSync=module;syncActiveFirebaseThread();syncChannelFirebase()}).catch(()=>{firebaseSync=null});
 const guestId=localStorage.getItem('lingoloop-guest-id')||`guest-${crypto.randomUUID?.()||Math.random().toString(36).slice(2)}`;
 localStorage.setItem('lingoloop-guest-id',guestId);
 try{friends=JSON.parse(localStorage.getItem('lingoloop-friends')||'[]')}catch(_){}
@@ -114,7 +116,7 @@ function handleSocketMessage(message){
     storeMessage(message.to,message);if(activeFriend?.id===message.to)renderConversation()
   }else if(message.type==='message-error'){notify(message.message)}
   else if(message.type==='block-updated'){notify(message.blocked?'Friend blocked':'Friend unblocked')}
-  else if(message.type==='channel-message'){window.dispatchEvent(new CustomEvent('lingo-channel-message',{detail:message}))}
+  else if(message.type==='channel-message'){firebaseSync?.saveChannelMessage?.(message.room||currentChannel,message).catch(()=>{});dispatchChannelMessage(message)}
   else if(message.type==='channel-presence'){window.dispatchEvent(new CustomEvent('lingo-channel-presence',{detail:message}))}
   else if(message.type==='channel-voice'){window.dispatchEvent(new CustomEvent('lingo-channel-voice',{detail:message}))}
   else if(message.type==='channel-activity'){window.dispatchEvent(new CustomEvent('lingo-channel-activity',{detail:message}))}
@@ -136,6 +138,8 @@ function getMessages(){try{return JSON.parse(localStorage.getItem(key(activeFrie
 function storeMessage(friendId,message,options={}){const storageKey=`lingoloop-dm-${[me().id,friendId].sort().join('-')}`;let messages=[];try{messages=JSON.parse(localStorage.getItem(storageKey)||'[]')}catch(_){}if(messages.some(item=>item.id===message.id))return;const saved={createdAt:Date.now(),...message};messages.push(saved);localStorage.setItem(storageKey,JSON.stringify(messages.slice(-100)));if(!options.fromFirebase)firebaseSync?.saveDirectMessage?.(me().id,friendId,saved).catch(()=>{})}
 function mergeFirebaseMessages(friendId,remoteMessages=[]){const storageKey=`lingoloop-dm-${[me().id,friendId].sort().join('-')}`;let local=[];try{local=JSON.parse(localStorage.getItem(storageKey)||'[]')}catch(_){}const map=new Map(local.map(item=>[item.id,item]));remoteMessages.forEach(item=>map.set(item.id,item));localStorage.setItem(storageKey,JSON.stringify([...map.values()].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)).slice(-100)))}
 function syncActiveFirebaseThread(){if(!firebaseSync?.ready?.()||!activeFriend||!window.lingoUser)return;const thread=firebaseSync.directThreadId(me().id,activeFriend.id);if(thread===firebaseThreadKey)return;firebaseThreadUnsubscribe?.();firebaseThreadKey=thread;firebaseThreadUnsubscribe=firebaseSync.listenDirectMessages(me().id,activeFriend.id,messages=>{mergeFirebaseMessages(activeFriend.id,messages);if(activeFriend&&firebaseSync.directThreadId(me().id,activeFriend.id)===thread)renderConversation()})}
+function dispatchChannelMessage(message){if(!message?.id||seenChannelMessages.has(message.id))return;seenChannelMessages.add(message.id);window.dispatchEvent(new CustomEvent('lingo-channel-message',{detail:message}))}
+function syncChannelFirebase(){if(!firebaseSync?.ready?.()||!currentChannel)return;if(firebaseChannelRoom===currentChannel)return;firebaseChannelUnsubscribe?.();firebaseChannelRoom=currentChannel;firebaseChannelUnsubscribe=firebaseSync.listenChannelMessages(currentChannel,messages=>messages.forEach(dispatchChannelMessage))}
 function renderConversation(){
   if(!activeFriend)return;
   syncActiveFirebaseThread();
@@ -255,8 +259,8 @@ document.getElementById('refreshFriendRequests')?.addEventListener('click',loadF
 document.getElementById('enableNotifications')?.addEventListener('click',enableNotifications);
 const savedVapid=localStorage.getItem('lingoloop-fcm-vapid');if(savedVapid&&document.getElementById('fcmVapidKey'))document.getElementById('fcmVapidKey').value=savedVapid;
 window.addEventListener('lingo-auth-changed',()=>{activeFriend=null;firebaseThreadUnsubscribe?.();firebaseThreadUnsubscribe=null;firebaseThreadKey='';document.getElementById('conversationActive').hidden=true;document.getElementById('conversationEmpty').hidden=false;resetConversationEmpty();renderFriends();socket?.close();connectChat();loadFriendRequests();requestDesktopNotificationsOnLogin()});renderFriends();renderNotifications();updateBadge();connectChat();loadFriendRequests();
-window.joinLingoChannel=room=>{currentChannel=room;if(socket?.readyState===WebSocket.OPEN)socket.send(JSON.stringify({type:'join-channel',room}))};
-window.sendLingoChannelMessage=text=>{if(socket?.readyState!==WebSocket.OPEN)return false;const user=me();socket.send(JSON.stringify({type:'channel-message',id:crypto.randomUUID?.()||String(Date.now()),room:currentChannel,senderName:user.name,text}));return true};
+window.joinLingoChannel=room=>{currentChannel=room;syncChannelFirebase();if(socket?.readyState===WebSocket.OPEN)socket.send(JSON.stringify({type:'join-channel',room}))};
+window.sendLingoChannelMessage=text=>{if(socket?.readyState!==WebSocket.OPEN)return false;const user=me();const message={type:'channel-message',id:crypto.randomUUID?.()||String(Date.now()),room:currentChannel,senderId:user.id,senderName:user.name,text,createdAt:Date.now()};firebaseSync?.saveChannelMessage?.(currentChannel,message).catch(()=>{});socket.send(JSON.stringify(message));return true};
 window.sendLingoVoiceActivity=speaking=>{if(socket?.readyState!==WebSocket.OPEN||!currentChannel)return false;socket.send(JSON.stringify({type:'channel-voice',room:currentChannel,clientId:sessionStorage.getItem('lingoloop-voice-client-id')||'',speaking:!!speaking}));return true};
 window.sendLingoActivity=(activity,payload={})=>{if(socket?.readyState!==WebSocket.OPEN||!currentChannel)return false;socket.send(JSON.stringify({type:'channel-activity',room:currentChannel,activity,payload}));return true};
 
