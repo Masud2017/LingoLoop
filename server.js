@@ -4,19 +4,22 @@ const path = require('path');
 const crypto = require('crypto');
 const { WebSocketServer, WebSocket } = require('ws');
 
-const port = 4173;
+const port = Number(process.env.PORT) || 4173;
+const host = process.env.HOST || '0.0.0.0';
 const root = __dirname;
-const scoreFile = path.join(root,'community-scores.json');
-const blockFile = path.join(root,'chat-blocks.json');
-const identityFile = path.join(root,'user-identities.json');
-const channelFile = path.join(root,'channels.json');
-const requestFile = path.join(root,'friend-requests.json');
-const notificationFile = path.join(root,'notification-tokens.json');
-const ipBanFile = path.join(root,'ip-bans.json');
-const shoutFile = path.join(root,'lingoshouts.json');
-const blogFile = path.join(root,'blogs.json');
-const payoutFile = path.join(root,'creator-payouts.json');
-const rewardFile = path.join(root,'behavior-rewards.json');
+const dataRoot = process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR) : root;
+try { fs.mkdirSync(dataRoot, { recursive: true }); } catch (_) {}
+const scoreFile = path.join(dataRoot,'community-scores.json');
+const blockFile = path.join(dataRoot,'chat-blocks.json');
+const identityFile = path.join(dataRoot,'user-identities.json');
+const channelFile = path.join(dataRoot,'channels.json');
+const requestFile = path.join(dataRoot,'friend-requests.json');
+const notificationFile = path.join(dataRoot,'notification-tokens.json');
+const ipBanFile = path.join(dataRoot,'ip-bans.json');
+const shoutFile = path.join(dataRoot,'lingoshouts.json');
+const blogFile = path.join(dataRoot,'blogs.json');
+const payoutFile = path.join(dataRoot,'creator-payouts.json');
+const rewardFile = path.join(dataRoot,'behavior-rewards.json');
 const CHANNEL_TTL=3*24*60*60*1000;
 loadEnvFile(path.join(root,'.env'));
 const rooms = new Map();
@@ -645,4 +648,7 @@ wss.on('connection', (socket,req) => {
 });
 
 removeExpiredChannels();setInterval(removeExpiredChannels,60*60*1000).unref();
-server.listen(port, '127.0.0.1', () => console.log(`LingoLoop running at http://localhost:${port}`));
+server.listen(port, host, () => {
+  const shownHost = host === '0.0.0.0' ? 'localhost' : host;
+  console.log(`LingoLoop running at http://${shownHost}:${port}`);
+});

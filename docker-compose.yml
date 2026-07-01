@@ -1,0 +1,20 @@
+services:
+  lingoloop:
+    build:
+      context: .
+    container_name: lingoloop-legacy
+    restart: unless-stopped
+    ports:
+      - "4173:4173"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 4173
+      HOST: 0.0.0.0
+      DATA_DIR: /app/data
+    volumes:
+      - lingoloop-data:/app/data
+
+volumes:
+  lingoloop-data:

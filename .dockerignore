@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.git
+.agents
+.codex
+outputs
+work
+.env
+firebase-admin*.json
+notification-tokens.json
+ip-bans.json
+creator-payouts.json
+*.log
