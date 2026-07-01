@@ -22,6 +22,8 @@ const initials=name=>name.split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperC
 function saveFriends(){localStorage.setItem('lingoloop-friends',JSON.stringify(friends))}
 function saveBlockedFriends(){localStorage.setItem('lingoloop-blocked-friends',JSON.stringify([...blockedFriends]))}
 function saveNotifications(){localStorage.setItem('lingoloop-notifications',JSON.stringify(notifications.slice(0,80)))}
+notifications=notifications.filter(item=>item.from!==me().id);
+saveNotifications();
 function notificationIcon(kind){return kind==='direct-message'?'chat':kind==='friend-request'?'person_add':kind==='friend-accepted'?'how_to_reg':kind==='channel-join'?'groups':'notifications'}
 function addNotification(item){
   const notification={id:item.id||crypto.randomUUID?.()||String(Date.now()),title:item.title||'LingoLoop notification',body:item.body||'',kind:item.notificationKind||item.kind||'general',createdAt:Date.now(),read:false,from:item.from||'',room:item.room||''};
@@ -106,6 +108,7 @@ function connectChat(){
 }
 function handleSocketMessage(message){
   if(message.type==='direct-message'){
+    if(message.from===me().id||message.senderId===me().id)return;
     if(blockedFriends.has(message.from))return;
     ensureFriend(message.from,message.senderName,message.senderAvatar);
     storeMessage(message.from,message);
@@ -190,7 +193,7 @@ function renderConversation(){
   });
   scrollToLatest();
 }
-function send(payload){if(blockedFriends.has(activeFriend?.id)){notify('Unblock this friend before sending a message');return}if(!activeFriend||socket?.readyState!==WebSocket.OPEN){notify('Chat is reconnecting - try again in a moment');return}const user=me();socket.send(JSON.stringify({type:'direct-message',id:crypto.randomUUID?.()||String(Date.now()),to:activeFriend.id,senderName:user.name,senderAvatar:user.avatar,kind:'text',createdAt:Date.now(),...payload}))}
+function send(payload){if(blockedFriends.has(activeFriend?.id)){notify('Unblock this friend before sending a message');return}if(!activeFriend||socket?.readyState!==WebSocket.OPEN){notify('Chat is reconnecting - try again in a moment');return}const user=me();socket.send(JSON.stringify({type:'direct-message',id:crypto.randomUUID?.()||String(Date.now()),from:user.id,senderId:user.id,to:activeFriend.id,senderName:user.name,senderAvatar:user.avatar,kind:'text',createdAt:Date.now(),...payload}))}
 function notify(text){const toast=document.getElementById('toast');toast.textContent=text;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2600)}
 function showBrowserNotification(message){notify(message.title);if(document.hidden&&'Notification'in window&&Notification.permission==='granted')new Notification(message.title,{body:message.body||'',icon:window.lingoUser?.avatar||'/assets/github-avatar.png',tag:message.notificationKind||'lingoloop'})}
 async function enableNotifications(){
