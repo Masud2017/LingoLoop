@@ -38,6 +38,13 @@ document.getElementById('payoutForm')?.addEventListener('submit',async event=>{e
 function setBlogPage(open){const page=document.getElementById('blogs');if(!page)return;if(open){const creator=document.getElementById('creator');creator?.classList.remove('open');creator?.setAttribute('aria-hidden','true');document.body.classList.remove('coffee-page-open')}page.classList.toggle('open',open);page.setAttribute('aria-hidden',String(!open));document.body.classList.toggle('blog-page-open',open);if(open)loadBlogs()}
 function syncBlogRoute(){setBlogPage(location.hash==='#blogs'||location.hash.startsWith('#blog/'))}
 document.getElementById('closeBlogPage')?.addEventListener('click',()=>{history.replaceState(null,'','#rooms');syncBlogRoute();document.getElementById('rooms')?.scrollIntoView({behavior:'smooth'})});
+document.addEventListener('click',event=>{
+  const link=event.target.closest?.('a[href="#blogs"]');
+  if(!link)return;
+  event.preventDefault();
+  history.pushState(null,'','#blogs');
+  syncBlogRoute();
+});
 window.addEventListener('hashchange',syncBlogRoute);
 window.addEventListener('popstate',syncBlogRoute);
 window.addEventListener('lingo-auth-changed',()=>{loadNews();loadShouts();loadBlogs()});
