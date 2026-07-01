@@ -42,6 +42,13 @@ function requireConfig() {
   if (configured) return true;
   toast('Add your Firebase configuration in firebase-config.js'); return false;
 }
+function useAuthorizedLocalhostForGoogle(){
+  if(location.hostname!=='127.0.0.1')return false;
+  const next=`http://localhost:${location.port||4173}${location.pathname}${location.search}${location.hash}`;
+  toast('Google login needs localhost instead of 127.0.0.1. Redirecting...');
+  setTimeout(()=>location.replace(next),700);
+  return true;
+}
 function googleProvider(){
   const provider=new GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
@@ -219,6 +226,7 @@ authForm.addEventListener('submit', async event => {
 });
 document.getElementById('googleAuth').addEventListener('click', async () => {
   if(!requireConfig()) return;
+  if(useAuthorizedLocalhostForGoogle())return;
   const button=document.getElementById('googleAuth');
   const provider=googleProvider();
   try {
@@ -236,7 +244,8 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
       const email=error.customData?.email||document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
       if(!password){document.getElementById('authEmail').value=email;toast('This email already has an account. Enter its password, then tap Google again.');return}
       try{const signedIn=await signInWithEmailAndPassword(auth,email,password),credential=GoogleAuthProvider.credentialFromError(error);if(credential)await linkWithCredential(signedIn.user,credential);await showUser(signedIn.user);close(authBackdrop);toast('Google linked to your existing account')}catch(linkError){toast(linkError.message.replace('Firebase: ',''))}
-    }else if(error.code==='auth/popup-blocked')toast('Google popup was blocked. Allow popups for this site and try again.');
+    }else if(error.code==='auth/unauthorized-domain')toast('Firebase blocks this domain. Use http://localhost:4173 or add this domain in Firebase Auth settings.');
+    else if(error.code==='auth/popup-blocked')toast('Google popup was blocked. Allow popups for this site and try again.');
     else if(error.code==='auth/cancelled-popup-request')toast('A Google sign-in popup is already open.');
     else if(error.code!=='auth/popup-closed-by-user')toast(error.message.replace('Firebase: ',''));
   } finally {
