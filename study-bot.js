@@ -11,6 +11,10 @@ let studySessions=[],activeStudySessionId='',studyFirebase=null,studyFirebaseUns
 
 import('./firebase-sync.js').then(module=>{studyFirebase=module;startStudyFirebaseSync()}).catch(()=>{studyFirebase=null});
 
+function studyStatus(message){
+  if(studyBotSubtitle)studyBotSubtitle.textContent=message;
+  console.warn(message);
+}
 function requireStudyLogin(){
   if(window.lingoUser)return true;
   const toast=document.getElementById('toast');
@@ -24,11 +28,29 @@ function studyUserId(){return window.lingoUser?.id||'guest'}
 function studyStorageKey(){return`lingoloop-study-helper-sessions-${studyUserId()}`}
 function defaultTitle(text='New study chat'){return String(text).trim().slice(0,36)||'New study chat'}
 function newSession(seedMessage=''){return{id:crypto.randomUUID?.()||String(Date.now()),title:defaultTitle(seedMessage)||'New study chat',createdAt:Date.now(),updatedAt:Date.now(),messages:[]}}
-function saveStudySessions(){localStorage.setItem(studyStorageKey(),JSON.stringify(studySessions.slice(0,30)));const current=activeSession();if(current)studyFirebase?.saveStudySession?.(studyUserId(),current).catch(()=>{})}
+function saveStudySessions(){localStorage.setItem(studyStorageKey(),JSON.stringify(studySessions.slice(0,30)));const current=activeSession();if(current&&window.lingoUser)studyFirebase?.saveStudySession?.(studyUserId(),current).catch(error=>studyStatus(`Firebase save blocked: ${error.message||error.code||'check database rules'}`))}
 function loadStudySessions(){try{studySessions=JSON.parse(localStorage.getItem(studyStorageKey())||'[]')}catch(_){studySessions=[]}if(!studySessions.length)studySessions=[newSession()];activeStudySessionId=localStorage.getItem(`${studyStorageKey()}-active`)||studySessions[0].id;if(!studySessions.some(session=>session.id===activeStudySessionId))activeStudySessionId=studySessions[0].id}
 function activeSession(){return studySessions.find(session=>session.id===activeStudySessionId)||studySessions[0]}
 function persistActiveSession(){localStorage.setItem(`${studyStorageKey()}-active`,activeStudySessionId)}
-function startStudyFirebaseSync(){if(!studyFirebase?.ready?.())return;studyFirebaseUnsubscribe?.();studyFirebaseUnsubscribe=studyFirebase.listenStudySessions(studyUserId(),sessions=>{if(!sessions.length)return;remoteStudyLoaded=true;const map=new Map(studySessions.map(session=>[session.id,session]));sessions.forEach(session=>map.set(session.id,{...session,messages:session.messages||[]}));studySessions=[...map.values()].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,30);if(!studySessions.some(session=>session.id===activeStudySessionId))activeStudySessionId=studySessions[0].id;localStorage.setItem(studyStorageKey(),JSON.stringify(studySessions));renderStudySessions();renderStudyMessages()})}
+function startStudyFirebaseSync(){
+  if(!studyFirebase?.ready?.()||!window.lingoUser)return;
+  const uid=studyUserId();
+  studyFirebaseUnsubscribe?.();
+  studyFirebase.saveStudyStatus?.(uid,{state:'study-helper-sync-started',clientTime:Date.now()}).catch(error=>studyStatus(`Firebase status blocked: ${error.message||error.code||'check database rules'}`));
+  studyFirebaseUnsubscribe=studyFirebase.listenStudySessions(uid,sessions=>{
+    if(!sessions.length)return;
+    remoteStudyLoaded=true;
+    const map=new Map(studySessions.map(session=>[session.id,session]));
+    sessions.forEach(session=>map.set(session.id,{...session,messages:session.messages||[]}));
+    studySessions=[...map.values()].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,30);
+    if(!studySessions.some(session=>session.id===activeStudySessionId))activeStudySessionId=studySessions[0].id;
+    localStorage.setItem(studyStorageKey(),JSON.stringify(studySessions));
+    renderStudySessions();
+    renderStudyMessages();
+  },error=>studyStatus(`Firebase read blocked: ${error.message||error.code||'check database rules'}`));
+  const current=activeSession();
+  if(current)studyFirebase.saveStudySession?.(uid,current).catch(error=>studyStatus(`Firebase save blocked: ${error.message||error.code||'check database rules'}`));
+}
 
 function openStudyBot(){
   if(!requireStudyLogin())return;

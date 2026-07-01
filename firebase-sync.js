@@ -80,7 +80,16 @@ export async function saveStudySession(uid, session) {
   return true;
 }
 
-export function listenStudySessions(uid, callback) {
+export async function saveStudyStatus(uid, status) {
+  if (!db || !uid) return false;
+  await set(ref(db, `studyHelperStatus/${uid}/latest`), clean({
+    ...status,
+    updatedAt: serverTimestamp()
+  }));
+  return true;
+}
+
+export function listenStudySessions(uid, callback, errorCallback) {
   if (!db || !uid) return () => {};
   const location = ref(db, `studyHelperSessions/${uid}`);
   const handler = snapshot => {
@@ -89,6 +98,6 @@ export function listenStudySessions(uid, callback) {
     sessions.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
     callback(sessions);
   };
-  onValue(location, handler);
+  onValue(location, handler, error => errorCallback?.(error));
   return () => off(location, 'value', handler);
 }

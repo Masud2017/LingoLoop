@@ -35,6 +35,11 @@ document.addEventListener('submit',async event=>{
 });
 document.getElementById('blogForm')?.addEventListener('submit',async event=>{event.preventDefault();const user=communityUser(),title=document.getElementById('blogTitle').value.trim(),content=document.getElementById('blogBody').value.trim();if(!user)return communityToast('Log in to publish a blog');if(!title||!content)return;await api('/api/blogs',{method:'POST',body:JSON.stringify({uid:user.id,title,content})});event.currentTarget.reset();communityToast('Blog published');loadBlogs()});
 document.getElementById('payoutForm')?.addEventListener('submit',async event=>{event.preventDefault();const user=communityUser();if(!user)return communityToast('Log in first');await api('/api/payout-info',{method:'POST',body:JSON.stringify({uid:user.id,iban:document.getElementById('payoutIban').value,country:document.getElementById('payoutCountry').value,legalName:document.getElementById('payoutName').value})});communityToast('Payout info saved for review')});
+function setBlogPage(open){const page=document.getElementById('blogs');if(!page)return;page.classList.toggle('open',open);page.setAttribute('aria-hidden',String(!open));document.body.classList.toggle('blog-page-open',open);if(open)loadBlogs()}
+function syncBlogRoute(){setBlogPage(location.hash==='#blogs'||location.hash.startsWith('#blog/'))}
+document.getElementById('closeBlogPage')?.addEventListener('click',()=>{history.replaceState(null,'','#rooms');syncBlogRoute();document.getElementById('rooms')?.scrollIntoView({behavior:'smooth'})});
+window.addEventListener('hashchange',syncBlogRoute);
 window.addEventListener('lingo-auth-changed',()=>{loadNews();loadShouts();loadBlogs()});
 loadShouts();loadBlogs();loadNews();
+syncBlogRoute();
 

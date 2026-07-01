@@ -45,6 +45,7 @@
   <link rel="stylesheet" href="community.css">
   <link rel="stylesheet" href="community-news.css">
   <link rel="stylesheet" href="ads-fallback.css">
+  <link rel="stylesheet" href="student-blog-page.css">
   <link rel="stylesheet" href="layout-polish.css">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7063341847693649" crossorigin="anonymous"></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LingoLoop","applicationCategory":"EducationalApplication","description":"Live language practice rooms, student social posts, blogs, study assistant, and community learning tools.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
@@ -60,6 +61,7 @@
       <a class="active" href="#rooms">Explore rooms</a>
       <a href="#how">How it works</a>
       <a href="#community">Community</a>
+      <a href="#blogs">Student blog</a>
       <a href="#creator">Creator</a>
     </nav>
     <div class="header-actions">
@@ -173,7 +175,12 @@
       </div>
     </section>
 
-    <section class="blog-section" id="blogs">
+    <section class="blog-section blog-page" id="blogs" aria-hidden="true">
+      <header class="blog-page-header">
+        <button class="account-back" id="closeBlogPage" type="button"><span class="material-symbols-rounded">arrow_back</span></button>
+        <a class="brand" href="#"><span class="brand-mark"><i></i><i></i><i></i></span><span>Lingo<span>Loop</span></span></a>
+        <span></span>
+      </header>
       <div class="section-heading">
         <div><span class="kicker">STUDENT BLOGS</span><h2>Write, teach, and earn.</h2><p>Blog ad money is tracked separately from platform ads. Only the blog creator earns from blog ads; readers do not.</p></div>
       </div>
