@@ -24,28 +24,44 @@
 
 .side-ad-rail {
   position: fixed;
-  left: max(14px, calc((100vw - 1600px) / 2));
-  top: 126px;
+  left: max(12px, calc((100vw - 1740px) / 2));
+  top: 132px;
   z-index: 18;
-  width: 184px;
-  min-height: 650px;
-  padding: 14px 12px;
-  border-radius: 24px;
+  width: 144px;
+  height: min(640px, calc(100vh - 148px));
+  min-height: 0;
+  padding: 10px;
+  border-radius: 22px;
   border: 1px dashed rgba(210,232,213,.22);
   background: rgba(18,32,24,.45);
   backdrop-filter: blur(16px);
   display: grid;
-  align-content: start;
+  grid-template-rows: auto minmax(0,1fr);
+  align-content: stretch;
   justify-items: center;
-  gap: 18px;
+  gap: 8px;
 }
 
 .side-ad-rail>span{display:inline-grid;place-items:center;height:28px;padding:0 13px;border-radius:999px;background:rgba(0,0,0,.24);color:#dbe8dc;font:900 11px 'DM Sans'}
+.side-ad-rail .ad-fallback{
+  min-height:0;
+  gap:1px;
+}
+
+.side-ad-rail .ad-fallback b{
+  font-size:10px;
+}
+
+.side-ad-rail .ad-fallback small{
+  font-size:9px;
+}
+
 .side-ad-rail .adsbygoogle {
-  width: 160px !important;
+  width: 120px !important;
   height: 600px !important;
   min-height: 600px;
-  max-width: 160px;
+  max-width: 120px;
+  align-self:start;
 }
 
 .side-ad-rail:has(.adsbygoogle[data-ad-status="filled"]) .ad-fallback {
@@ -81,6 +97,30 @@
   min-height: 180px;
 }
 
-@media(max-width:1460px){
+@media(min-width:1280px){
+  body:not(.ad-free-active) main{
+    padding-left:150px;
+  }
+
+  body:not(.ad-free-active) .top-ad-bar{
+    width:min(1180px,calc(100% - 190px));
+    margin-left:170px;
+    margin-right:auto;
+  }
+}
+
+@media(max-width:1279px){
   .side-ad-rail{display:none}
+}
+
+@media(min-width:1280px) and (max-width:1500px){
+  .side-ad-rail{
+    left:8px;
+    width:132px;
+    padding:8px 6px;
+  }
+
+  .side-ad-rail .adsbygoogle{
+    width:120px!important;
+  }
 }
