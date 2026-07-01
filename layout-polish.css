@@ -1,17 +1,22 @@
 /* Final responsive polish for navigation and page chrome. */
 .site-header{
-  gap:18px;
+  width:min(1500px,calc(100% - 28px));
+  gap:clamp(14px,1.5vw,26px);
+  padding-inline:clamp(18px,2vw,30px);
+  overflow:visible;
 }
 
 .brand{
   flex:0 0 auto;
   white-space:nowrap;
+  min-width:max-content;
 }
 
 .desktop-nav{
-  flex:1 1 auto;
+  flex:1 1 560px;
   min-width:0;
   justify-content:center;
+  gap:clamp(6px,.7vw,12px);
 }
 
 .desktop-nav a,
@@ -25,26 +30,51 @@
 .desktop-nav a{
   display:inline-flex;
   align-items:center;
-  min-height:44px;
-  padding-inline:clamp(10px,1.1vw,16px);
-  font-size:clamp(12px,.95vw,14px);
+  justify-content:center;
+  min-height:42px;
+  padding-inline:clamp(11px,.9vw,18px);
+  font-size:clamp(12px,.86vw,14px);
+  line-height:1;
 }
 
 .header-actions{
-  flex:0 1 auto;
+  flex:0 0 auto;
   min-width:0;
-  gap:clamp(8px,1vw,16px);
+  gap:clamp(10px,1.1vw,18px);
 }
 
 .header-actions .button{
   min-width:max-content;
+  padding-inline:clamp(18px,1.25vw,26px);
 }
 
-@media(max-width:1120px){
-  .site-header{width:calc(100% - 18px);padding-inline:16px}
-  .desktop-nav{gap:4px}
+@media(max-width:1320px){
+  .site-header{width:calc(100% - 18px);gap:12px;padding-inline:16px}
+  .brand{font-size:18px}
+  .desktop-nav{gap:4px;flex-basis:470px}
+  .desktop-nav a{padding-inline:10px;font-size:12px}
+  .theme-toggle{width:38px;height:38px}
+  .share-platform-button{width:42px;padding:0;justify-content:center}
   .share-platform-button span:last-child{display:none}
+  .header-actions{gap:8px}
   .header-actions .button{padding-inline:16px}
+  .profile-chip{max-width:132px}
+  .profile-chip #headerName{overflow:hidden;text-overflow:ellipsis}
+}
+
+@media(max-width:1160px){
+  .desktop-nav a[href="#how"],
+  .desktop-nav a[href="#community"]{
+    display:none;
+  }
+  .desktop-nav{flex-basis:300px}
+}
+
+@media(max-width:1040px){
+  .desktop-nav a[href="#blogs"]{
+    display:none;
+  }
+  .desktop-nav{flex-basis:210px}
 }
 
 @media(max-width:960px){
