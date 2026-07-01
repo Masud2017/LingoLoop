@@ -1,6 +1,6 @@
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import { getDatabase, ref, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
 const configured = !firebaseConfig.apiKey.startsWith('YOUR_');
@@ -41,6 +41,11 @@ function setMode(next) {
 function requireConfig() {
   if (configured) return true;
   toast('Add your Firebase configuration in firebase-config.js'); return false;
+}
+function googleProvider(){
+  const provider=new GoogleAuthProvider();
+  provider.setCustomParameters({prompt:'select_account'});
+  return provider;
 }
 async function getIdentity(user) {
   const name = user.displayName || user.email.split('@')[0];
@@ -196,6 +201,7 @@ document.getElementById('profilePhotoUpload')?.addEventListener('change',event=>
 if (configured) {
   const app = initializeApp(firebaseConfig); auth = getAuth(app); database = getDatabase(app);
   onAuthStateChanged(auth, async user => { if(user) await showUser(user); else { document.body.classList.remove('logged-in'); window.lingoUser=null; window.dispatchEvent(new CustomEvent('lingo-auth-changed',{detail:null})); profileChip.hidden=true;if(openMyProfileShortcut)openMyProfileShortcut.hidden=true; document.getElementById('authLogin').hidden=false; document.getElementById('openSignup').hidden=false; } });
+  getRedirectResult(auth).then(async result=>{if(!result?.user)return;if(!result.user.photoURL)await updateProfile(result.user,{photoURL:randomAvatar()});await showUser(result.user);close(authBackdrop);toast('Welcome back')}).catch(error=>toast(error.message.replace('Firebase: ','')));
   document.getElementById('authNote').hidden = true;
 }
 
@@ -213,10 +219,17 @@ authForm.addEventListener('submit', async event => {
 });
 document.getElementById('googleAuth').addEventListener('click', async () => {
   if(!requireConfig()) return;
-  const provider=new GoogleAuthProvider();
-  provider.setCustomParameters({prompt:'select_account'});
+  const button=document.getElementById('googleAuth');
+  const provider=googleProvider();
   try {
-    const result=auth.currentUser?await linkWithPopup(auth.currentUser,provider):await signInWithPopup(auth,provider);
+    if(!auth.currentUser){
+      button.disabled=true;
+      button.textContent='Opening Google...';
+      toast('Opening Google sign-in...');
+      await signInWithRedirect(auth,provider);
+      return;
+    }
+    const result=await linkWithPopup(auth.currentUser,provider);
     if(!result.user.photoURL)await updateProfile(result.user,{photoURL:randomAvatar()});await showUser(result.user);close(authBackdrop);toast(auth.currentUser?'Google connected to your account':'Welcome back');
   } catch(error){
     if(error.code==='auth/account-exists-with-different-credential'){
@@ -226,6 +239,9 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
     }else if(error.code==='auth/popup-blocked')toast('Google popup was blocked. Allow popups for this site and try again.');
     else if(error.code==='auth/cancelled-popup-request')toast('A Google sign-in popup is already open.');
     else if(error.code!=='auth/popup-closed-by-user')toast(error.message.replace('Firebase: ',''));
+  } finally {
+    button.disabled=false;
+    button.innerHTML='<span class="google-g">G</span> Continue with Google';
   }
 });
 window.openLingoAuth=openAuthModal;
