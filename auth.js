@@ -28,6 +28,7 @@ function toast(message) {
 }
 function open(backdrop) { backdrop.classList.add('open'); backdrop.setAttribute('aria-hidden','false'); }
 function close(backdrop) { backdrop.classList.remove('open'); backdrop.setAttribute('aria-hidden','true'); }
+function openAuthModal(next='login'){setMode(next);open(authBackdrop);setTimeout(()=>document.getElementById('googleAuth')?.focus(),80)}
 function providerIds(user=auth?.currentUser){return user?.providerData.map(provider=>provider.providerId)||[]}
 function updateSettingsState(){const user=auth?.currentUser;if(!user)return;const hasPassword=providerIds(user).includes('password'),hasGoogle=providerIds(user).includes('google.com');document.getElementById('currentPasswordField').hidden=!hasPassword;document.getElementById('currentPassword').required=hasPassword;document.getElementById('passwordModeHelp').textContent=hasPassword?'Change your existing password.':'Create a password so you can also sign in with email.';document.getElementById('providerStatus').textContent=hasGoogle?'Google is connected to this account.':'Google is not connected yet.';document.getElementById('linkGoogleAccount').disabled=hasGoogle}
 function setMode(next) {
@@ -165,8 +166,8 @@ async function showUser(user) {
   window.dispatchEvent(new CustomEvent('lingo-auth-changed',{detail:window.lingoUser}));
 }
 
-document.getElementById('authLogin').addEventListener('click', () => { setMode('login'); open(authBackdrop); });
-document.getElementById('openSignup').addEventListener('click', () => { setMode('signup'); open(authBackdrop); });
+document.getElementById('authLogin').addEventListener('click', () => openAuthModal('login'));
+document.getElementById('openSignup').addEventListener('click', () => openAuthModal('signup'));
 document.getElementById('closeAuth').addEventListener('click', () => close(authBackdrop));
 document.getElementById('closeProfile').addEventListener('click', () => close(profileBackdrop));
 profileChip.addEventListener('click', () => open(profileBackdrop));
@@ -213,6 +214,7 @@ authForm.addEventListener('submit', async event => {
 document.getElementById('googleAuth').addEventListener('click', async () => {
   if(!requireConfig()) return;
   const provider=new GoogleAuthProvider();
+  provider.setCustomParameters({prompt:'select_account'});
   try {
     const result=auth.currentUser?await linkWithPopup(auth.currentUser,provider):await signInWithPopup(auth,provider);
     if(!result.user.photoURL)await updateProfile(result.user,{photoURL:randomAvatar()});await showUser(result.user);close(authBackdrop);toast(auth.currentUser?'Google connected to your account':'Welcome back');
@@ -221,9 +223,12 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
       const email=error.customData?.email||document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
       if(!password){document.getElementById('authEmail').value=email;toast('This email already has an account. Enter its password, then tap Google again.');return}
       try{const signedIn=await signInWithEmailAndPassword(auth,email,password),credential=GoogleAuthProvider.credentialFromError(error);if(credential)await linkWithCredential(signedIn.user,credential);await showUser(signedIn.user);close(authBackdrop);toast('Google linked to your existing account')}catch(linkError){toast(linkError.message.replace('Firebase: ',''))}
-    }else if(error.code!=='auth/popup-closed-by-user')toast(error.message.replace('Firebase: ',''));
+    }else if(error.code==='auth/popup-blocked')toast('Google popup was blocked. Allow popups for this site and try again.');
+    else if(error.code==='auth/cancelled-popup-request')toast('A Google sign-in popup is already open.');
+    else if(error.code!=='auth/popup-closed-by-user')toast(error.message.replace('Firebase: ',''));
   }
 });
+window.openLingoAuth=openAuthModal;
 document.getElementById('signOutButton').addEventListener('click', async () => { if(auth) await signOut(auth); close(profileBackdrop); toast('Signed out'); });
 const settingsPage=document.getElementById('settingsPage');
 const notificationSettingsPagelet=document.getElementById('notificationSettingsPagelet');

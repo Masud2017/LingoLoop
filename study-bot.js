@@ -19,7 +19,8 @@ function requireStudyLogin(){
   if(window.lingoUser)return true;
   const toast=document.getElementById('toast');
   if(toast){toast.textContent='Log in to use the Study Helper and start your 30-day trial.';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000)}
-  document.getElementById('authLogin')?.click();
+  if(window.openLingoAuth)window.openLingoAuth('login');
+  else document.getElementById('authLogin')?.click();
   return false;
 }
 function studyTrialKey(){return `${STUDY_TRIAL_KEY}-${studyUserId()}`}
