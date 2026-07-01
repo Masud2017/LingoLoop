@@ -24,12 +24,12 @@
 
 .side-ad-rail {
   position: fixed;
-  left: max(16px, calc((100vw - 1540px) / 2));
-  top: 190px;
+  left: max(14px, calc((100vw - 1600px) / 2));
+  top: 126px;
   z-index: 18;
-  width: 118px;
-  min-height: 320px;
-  padding: 16px 12px;
+  width: 184px;
+  min-height: 650px;
+  padding: 14px 12px;
   border-radius: 24px;
   border: 1px dashed rgba(210,232,213,.22);
   background: rgba(18,32,24,.45);
@@ -42,8 +42,14 @@
 
 .side-ad-rail>span{display:inline-grid;place-items:center;height:28px;padding:0 13px;border-radius:999px;background:rgba(0,0,0,.24);color:#dbe8dc;font:900 11px 'DM Sans'}
 .side-ad-rail .adsbygoogle {
-  min-height: 180px;
-  width: 100%;
+  width: 160px !important;
+  height: 600px !important;
+  min-height: 600px;
+  max-width: 160px;
+}
+
+.side-ad-rail:has(.adsbygoogle[data-ad-status="filled"]) .ad-fallback {
+  display: none;
 }
 
 .top-ad-bar {
@@ -75,6 +81,6 @@
   min-height: 180px;
 }
 
-@media(max-width:1280px){
+@media(max-width:1460px){
   .side-ad-rail{display:none}
 }
