@@ -13,6 +13,12 @@ function saveDonors(donors){localStorage.setItem(donorKey,JSON.stringify(donors)
 function renderDonors(){if(!donorList)return;const donors=readDonors();saveDonors(donors);donorList.innerHTML='';if(!donors.length){donorList.innerHTML='<p>No public supporters yet. Be the first coffee hero.</p>';return}donors.slice(0,30).forEach(donor=>{const card=document.createElement('article');card.className='donor-card';const avatar=document.createElement('span');avatar.className='donor-avatar';if(donor.avatar){const image=document.createElement('img');image.src=donor.avatar;image.alt='';avatar.appendChild(image)}else avatar.textContent=donor.name.split(/\s+/).map(part=>part[0]).join('').slice(0,2).toUpperCase();const copy=document.createElement('div');copy.innerHTML='<b></b><small></small>';copy.querySelector('b').textContent=donor.name;copy.querySelector('small').textContent=`Supported with $${donor.amount}`;card.append(avatar,copy);donorList.appendChild(card)})}
 function setCoffeePage(open){
   if(!coffeePage)return;
+  if(open){
+    const blogPage=document.getElementById('blogs');
+    blogPage?.classList.remove('open');
+    blogPage?.setAttribute('aria-hidden','true');
+    document.body.classList.remove('blog-page-open');
+  }
   coffeePage.classList.toggle('open',open);
   coffeePage.setAttribute('aria-hidden',String(!open));
   document.body.classList.toggle('coffee-page-open',open);
@@ -32,6 +38,14 @@ coffeeForm.addEventListener('submit',event=>{
   window.open(destination,'_blank','noopener,noreferrer');
 });
 document.getElementById('closeCoffeePage')?.addEventListener('click',()=>{history.replaceState(null,'','#rooms');syncCoffeeRoute();document.getElementById('rooms')?.scrollIntoView({behavior:'smooth'})});
+document.addEventListener('click',event=>{
+  const link=event.target.closest?.('a[href="#creator"],a[href="#coffee"]');
+  if(!link)return;
+  event.preventDefault();
+  history.pushState(null,'',link.getAttribute('href'));
+  syncCoffeeRoute();
+});
 window.addEventListener('hashchange',syncCoffeeRoute);
+window.addEventListener('popstate',syncCoffeeRoute);
 renderDonors();
 syncCoffeeRoute();
