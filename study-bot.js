@@ -11,7 +11,15 @@ let studySessions=[],activeStudySessionId='',studyFirebase=null,studyFirebaseUns
 
 import('./firebase-sync.js').then(module=>{studyFirebase=module;startStudyFirebaseSync()}).catch(()=>{studyFirebase=null});
 
-function studyPlan(){const premium=localStorage.getItem(STUDY_PREMIUM_KEY)==='active';let trial=Number(localStorage.getItem(STUDY_TRIAL_KEY)||0);if(!trial){trial=Date.now();localStorage.setItem(STUDY_TRIAL_KEY,String(trial))}const daysLeft=Math.max(0,30-Math.floor((Date.now()-trial)/86400000));return{premium,daysLeft,allowed:premium||daysLeft>0}}
+function requireStudyLogin(){
+  if(window.lingoUser)return true;
+  const toast=document.getElementById('toast');
+  if(toast){toast.textContent='Log in to use the Study Helper and start your 30-day trial.';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000)}
+  document.getElementById('authLogin')?.click();
+  return false;
+}
+function studyTrialKey(){return `${STUDY_TRIAL_KEY}-${studyUserId()}`}
+function studyPlan(){if(!window.lingoUser)return{premium:false,daysLeft:0,allowed:false,loginRequired:true};const premium=localStorage.getItem(STUDY_PREMIUM_KEY)==='active';let trial=Number(localStorage.getItem(studyTrialKey())||0);if(!trial){trial=Date.now();localStorage.setItem(studyTrialKey(),String(trial))}const daysLeft=Math.max(0,30-Math.floor((Date.now()-trial)/86400000));return{premium,daysLeft,allowed:premium||daysLeft>0,loginRequired:false}}
 function studyUserId(){return window.lingoUser?.id||'guest'}
 function studyStorageKey(){return`lingoloop-study-helper-sessions-${studyUserId()}`}
 function defaultTitle(text='New study chat'){return String(text).trim().slice(0,36)||'New study chat'}
@@ -23,6 +31,7 @@ function persistActiveSession(){localStorage.setItem(`${studyStorageKey()}-activ
 function startStudyFirebaseSync(){if(!studyFirebase?.ready?.())return;studyFirebaseUnsubscribe?.();studyFirebaseUnsubscribe=studyFirebase.listenStudySessions(studyUserId(),sessions=>{if(!sessions.length)return;remoteStudyLoaded=true;const map=new Map(studySessions.map(session=>[session.id,session]));sessions.forEach(session=>map.set(session.id,{...session,messages:session.messages||[]}));studySessions=[...map.values()].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0)).slice(0,30);if(!studySessions.some(session=>session.id===activeStudySessionId))activeStudySessionId=studySessions[0].id;localStorage.setItem(studyStorageKey(),JSON.stringify(studySessions));renderStudySessions();renderStudyMessages()})}
 
 function openStudyBot(){
+  if(!requireStudyLogin())return;
   studyBot.classList.add('open');
   studyBot.classList.remove('minimized');
   studyBot.setAttribute('aria-hidden','false');
@@ -48,7 +57,7 @@ function renderStudySessions(){
     studySessionBar.appendChild(button);
   });
   const plan=studyPlan();
-  if(studyBotSubtitle)studyBotSubtitle.textContent=plan.premium?'Premium study memory':`${plan.daysLeft} trial day${plan.daysLeft===1?'':'s'} left - Firebase memory`;
+  if(studyBotSubtitle)studyBotSubtitle.textContent=plan.loginRequired?'Log in to start your 30-day trial':plan.premium?'Premium study memory':`${plan.daysLeft} trial day${plan.daysLeft===1?'':'s'} left - Firebase memory`;
 }
 
 function renderStudyMessages(){
@@ -113,6 +122,7 @@ function localFallback(text){
   return `I can help with ${topic}. Ask for a study plan, simple explanation, practice questions, or useful resources.`;
 }
 async function botReply(text){
+  if(!requireStudyLogin())return;
   const plan=studyPlan();
   if(!plan.allowed){addStudyMessage('bot','Your 30-day free trial has ended. Subscribe to premium to keep using the study helper. Crypto payment can be enabled from the subscription section too.');return}
   const topic=extractTopic(text);
@@ -139,6 +149,7 @@ document.getElementById('newStudyChat')?.addEventListener('click',()=>createStud
 studyBot?.addEventListener('click',event=>{if(studyBot.classList.contains('minimized')&&!event.target.closest('.study-window-actions')){studyBot.classList.remove('minimized');studyBotInput.focus()}});
 studyBotForm?.addEventListener('submit',event=>{
   event.preventDefault();
+  if(!requireStudyLogin())return;
   const text=studyBotInput.value.trim();
   if(!text)return;
   addStudyMessage('user',text);
@@ -146,6 +157,7 @@ studyBotForm?.addEventListener('submit',event=>{
   setTimeout(()=>botReply(text),180);
 });
 document.querySelectorAll('[data-study-prompt]').forEach(button=>button.addEventListener('click',()=>{
+  if(!requireStudyLogin())return;
   openStudyBot();
   const text=button.dataset.studyPrompt;
   addStudyMessage('user',text);
