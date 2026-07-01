@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#20342d">
+  <meta property="og:title" content="LingoLoop - Speak the world">
+  <meta property="og:description" content="Practice languages in live rooms, share progress, publish blogs, and learn with a global student community.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="description" content="LingoLoop &mdash; live language practice rooms for curious people everywhere.">
+  <title>LingoLoop &mdash; Speak the world</title>
+  <link rel="icon" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Crect width="64" height="64" rx="18" fill="%234f6354"/%3E%3Crect x="18" y="23" width="5" height="18" rx="3" fill="%23d2e8d5"/%3E%3Crect x="29" y="15" width="5" height="34" rx="3" fill="%23d2e8d5"/%3E%3Crect x="40" y="22" width="5" height="20" rx="3" fill="%23d2e8d5"/%3E%3C/svg%3E'>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="call.css">
+  <link rel="stylesheet" href="irc.css">
+  <link rel="stylesheet" href="ripple.css">
+  <link rel="stylesheet" href="material.css">
+  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="channel-cards.css">
+  <link rel="stylesheet" href="owner-controls.css">
+  <link rel="stylesheet" href="group-filters.css">
+  <link rel="stylesheet" href="friend-chat.css">
+  <link rel="stylesheet" href="friend-chat-layout.css">
+  <link rel="stylesheet" href="activities.css">
+  <link rel="stylesheet" href="moderation.css">
+  <link rel="stylesheet" href="chat-safety.css">
+  <link rel="stylesheet" href="dark-contrast.css">
+  <link rel="stylesheet" href="donation.css">
+  <link rel="stylesheet" href="github-showcase.css">
+  <link rel="stylesheet" href="friend-controls.css">
+  <link rel="stylesheet" href="share.css">
+  <link rel="stylesheet" href="account-pages.css">
+  <link rel="stylesheet" href="study-bot.css">
+  <link rel="stylesheet" href="monetization.css">
+  <link rel="stylesheet" href="profile-todos.css">
+  <link rel="stylesheet" href="mobile-responsive.css">
+  <link rel="stylesheet" href="pomodoro.css">
+  <link rel="stylesheet" href="community.css">
+  <link rel="stylesheet" href="community-news.css">
+  <link rel="stylesheet" href="ads-fallback.css">
+  <link rel="stylesheet" href="layout-polish.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7063341847693649" crossorigin="anonymous"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LingoLoop","applicationCategory":"EducationalApplication","description":"Live language practice rooms, student social posts, blogs, study assistant, and community learning tools.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="LingoLoop home">
+      <span class="brand-mark"><i></i><i></i><i></i></span>
+      <span>Lingo<span>Loop</span></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a class="active" href="#rooms">Explore rooms</a>
+      <a href="#how">How it works</a>
+      <a href="#community">Community</a>
+      <a href="#creator">Creator</a>
+    </nav>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Switch theme"><span class="material-symbols-rounded">dark_mode</span></button>
+      <button class="share-platform-button" id="sharePlatformButton" type="button"><span class="material-symbols-rounded">ios_share</span><span>Share</span></button>
+      <button class="text-button" id="authLogin">Log in</button>
+      <button class="button button-dark" id="openSignup">Join free</button>
+      <button class="text-button" id="openMyProfileShortcut" type="button" hidden>My profile</button>
+      <button class="profile-chip" id="profileChip" hidden><span class="header-avatar-wrap"><img id="headerAvatar" alt="Your avatar"><small><b data-behavior-points>5000</b> pts</small></span><span id="headerName"></span><span class="material-symbols-rounded">expand_more</span></button>
+    </div>
+  </header>
+  <aside class="side-ad-rail google-ad-card" data-ad-zone aria-label="Advertisement"><span>Ad</span><div class="ad-fallback"><b>Google AdSense</b><small>Square ad slot</small></div><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7063341847693649" data-ad-slot="8785275944" data-ad-format="auto" data-full-width-responsive="true"></ins></aside>
+  <section class="top-ad-bar google-ad-card" data-ad-zone aria-label="Sponsored advertisement"><span class="material-symbols-rounded">campaign</span><div class="ad-fallback"><b>Sponsored space</b><small>Horizontal AdSense slot - hidden for ad-free members.</small></div><ins class="adsbygoogle" style="display:block;width:100%" data-ad-client="ca-pub-7063341847693649" data-ad-slot="2860398367" data-ad-format="auto" data-full-width-responsive="true"></ins></section>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> Real practice rooms, created by your users</div>
+        <h1>Your next language<br>lives in a <em>conversation.</em></h1>
+        <p>Drop into friendly audio rooms, meet people across the globe, and build real confidence&mdash;one hello at a time.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#rooms">Find a room <span>&darr;</span></a>
+          <button class="play-button" id="playStory"><span class="play-icon">&#9654;</span> See how it works</button>
+        </div>
+        <div class="trust-line"><div><strong>Fresh start</strong><br><small>Create the first real room and invite real learners.</small></div></div>
+        <div class="creator-money-note"><span class="material-symbols-rounded">payments</span><div><b>Creators can earn from writing.</b><small>European blog creators keep 80% of their own blog ad revenue after payout setup.</small></div></div>
+      </div>
+      <div class="hero-art" aria-label="People connecting through languages">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="globe">
+          <span class="globe-word word-one">hola!</span><span class="globe-word word-two">ni hao</span><span class="globe-word word-three">salut!</span>
+          <div class="face face-main"><span>R</span><i class="online"></i></div>
+          <div class="face face-a"><span>N</span><i></i></div>
+          <div class="face face-b"><span>J</span><i></i></div>
+          <div class="face face-c"><span>L</span><i></i></div>
+          <div class="wave-card"><span></span><span></span><span></span><span></span><span></span><span></span><b>LIVE</b></div>
+        </div>
+        <div class="float-note note-one">BR <span><b>Portuguese</b><small>S&atilde;o Paulo</small></span></div>
+        <div class="float-note note-two">JP <span><b>Japanese</b><small>Tokyo</small></span></div>
+      </div>
+    </section>
+
+    <section class="home-dashboard" id="home-dashboard">
+      <div class="lingoshout-card">
+        <div class="section-heading small"><div><span class="kicker">LINGOSHOUT</span><h2>Community learning progress.</h2></div></div>
+        <p class="muted-text">Post your own LingoShout from your profile page.</p>
+        <div class="lingoshout-feed" id="lingoshoutFeed"><p>No LingoShouts yet.</p></div>
+      </div>
+      <aside class="news-widget" id="newsWidget">
+        <div><span class="kicker">TRUSTED HEADLINES</span><h3>BBC + Al Jazeera</h3><small>10 stories total: 5 from each platform, with short previews.</small></div>
+        <div class="news-list" id="newsList"><p>Loading trusted headlines&hellip;</p></div>
+      </aside>
+    </section>
+
+    <section class="rooms-section" id="rooms">
+      <div class="section-heading">
+        <div><span class="kicker">HAPPENING NOW</span><h2>Find your people. Start talking.</h2></div>
+        <button class="button button-outline" id="openRoom">+ Create a room</button>
+      </div>
+
+      <div class="room-tools">
+        <div class="filters" role="group" aria-label="Filter rooms">
+          <button class="filter active" data-language="All">All rooms <span>24</span></button>
+          <button class="filter" data-language="English">English</button>
+          <button class="filter" data-language="Spanish">Spanish</button>
+          <button class="filter" data-language="French">French</button>
+          <button class="filter" data-language="Japanese">Japanese</button>
+        </div>
+        <label class="search"><span>&#8981;</span><input id="roomSearch" type="search" placeholder="Search rooms" aria-label="Search rooms"></label>
+      </div>
+
+      <div class="discovery-filters" aria-label="Group discovery filters">
+        <label><span class="material-symbols-rounded">school</span><select id="levelFilter"><option value="All">All levels</option><option value="Beginner">Beginner</option><option value="Intermediate">Intermediate</option><option value="Advanced">Advanced</option><option value="All levels">All-level rooms</option><option value="Community">Community</option></select></label>
+        <label><span class="material-symbols-rounded">event_seat</span><select id="availabilityFilter"><option value="All">Any availability</option><option value="Open">Open seats</option><option value="Small">Small groups</option></select></label>
+        <label><span class="material-symbols-rounded">swap_vert</span><select id="sortFilter"><option value="popular">Most active</option><option value="newest">Newest first</option><option value="az">Name A-Z</option></select></label>
+        <button id="clearFilters"><span class="material-symbols-rounded">filter_alt_off</span> Reset</button>
+        <span class="result-count" id="roomResults">0 groups found</span>
+      </div>
+
+      <div class="rooms-grid" id="roomsGrid">
+      </div>
+      <div class="empty-state" id="emptyState"><span>World</span><h3>No real rooms yet</h3><p>Create a room to start testing with real users.</p></div>
+    </section>
+
+    <section class="monetization-section" id="support-plan">
+      <div class="ad-card google-ad-card" data-ad-zone>
+        <div class="ad-label"><span class="material-symbols-rounded">ads_click</span> Sponsored</div>
+        <div class="google-ad-slot" id="googleAdSlot">
+          <div>
+            <span class="material-symbols-rounded">campaign</span>
+            <h3>Google AdSense space</h3>
+            <p>Google AdSense square slot. It may stay empty on localhost until Google serves an ad.</p>
+          </div>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-7063341847693649"
+               data-ad-slot="8785275944"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+        </div>
+      </div>
+      <div class="ad-free-card">
+        <span class="support-kicker"><span class="material-symbols-rounded">workspace_premium</span> AD-FREE OPTION</span>
+        <h2>Use LingoLoop without ads.</h2>
+        <p>Keep ads gentle for free members, and let supporters remove them completely for &euro;5/month.</p>
+        <div class="price-row"><b>&euro;5</b><span>/ month</span></div>
+        <button class="button button-primary" id="subscribeAdFree" type="button"><span class="material-symbols-rounded">credit_card</span> Go ad-free</button>
+        <button class="button button-outline crypto-subscribe" id="subscribeCrypto" type="button"><span class="material-symbols-rounded">currency_bitcoin</span> Pay with crypto</button>
+        <button class="text-button restore-ads" id="restoreAds" type="button" hidden>Show ads again</button>
+        <small id="adFreeStatus">Free plan: ads are visible.</small>
+      </div>
+    </section>
+
+    <section class="blog-section" id="blogs">
+      <div class="section-heading">
+        <div><span class="kicker">STUDENT BLOGS</span><h2>Write, teach, and earn.</h2><p>Blog ad money is tracked separately from platform ads. Only the blog creator earns from blog ads; readers do not.</p></div>
+      </div>
+      <div class="blog-layout">
+        <form class="blog-form" id="blogForm"><h3>Create a blog post</h3><input id="blogTitle" maxlength="90" placeholder="Blog title"><textarea id="blogBody" maxlength="4000" placeholder="Share useful language tips, progress, or resources..."></textarea><button class="button button-primary" type="submit">Publish blog</button></form>
+        <aside class="creator-earning-card"><span class="support-kicker"><span class="material-symbols-rounded">euro</span> EUROPE CREATOR PAYOUT</span><h3>Blog creators receive 80%</h3><p>For now, only European creators can receive blog ad payouts. Provide IBAN and payout details before earnings are released.</p><form id="payoutForm"><input id="payoutIban" placeholder="IBAN"><input id="payoutCountry" placeholder="European country"><input id="payoutName" placeholder="Legal name"><button type="submit">Save payout info</button></form></aside>
+      </div>
+      <div class="blog-feed" id="blogFeed"><p>No blogs published yet.</p></div>
+    </section>
+
+    <section class="support-section coffee-page" id="creator" aria-hidden="true">
+      <header class="coffee-page-header">
+        <button class="account-back" id="closeCoffeePage" type="button"><span class="material-symbols-rounded">arrow_back</span></button>
+        <a class="brand" href="#"><span class="brand-mark"><i></i><i></i><i></i></span><span>Lingo<span>Loop</span></span></a>
+        <span></span>
+      </header>
+      <div class="creator-page-shell">
+        <section class="github-showcase" id="projects">
+          <div class="github-profile-card">
+            <div class="github-identity"><img src="assets/github-avatar.png" alt="GitHub avatar of Md. Masud Karim"><span class="github-online"></span></div>
+            <span class="github-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .7a11.3 11.3 0 0 0-3.6 22c.6.1.8-.2.8-.5v-2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.3 11.3 0 0 0 12 .7Z"/></svg> GITHUB PROFILE</span>
+            <h2>Md. Masud Karim</h2><a class="github-handle" href="https://github.com/Masud2017" target="_blank" rel="noopener">@Masud2017 <span class="material-symbols-rounded">open_in_new</span></a>
+            <p>A self-taught computer programmer, creator of the Piranha project, and passionate builder who loves code and a good cup of coffee.</p>
+            <div class="github-meta"><span><span class="material-symbols-rounded">location_on</span> Amsterdam</span><span><span class="material-symbols-rounded">folder_open</span> 154 public repositories</span></div>
+            <a class="github-profile-link" href="https://github.com/Masud2017" target="_blank" rel="noopener">View GitHub profile <span class="material-symbols-rounded">arrow_forward</span></a>
+          </div>
+          <div class="project-showcase">
+            <div class="project-heading"><div><span>SELECTED WORK</span><h2>Projects with momentum.</h2></div><p>Ranked by public commit activity, highest first.</p></div>
+            <div class="project-grid">
+              <a class="project-card" href="https://github.com/Masud2017/home_rental_info_scraper" target="_blank" rel="noopener"><span class="project-rank">01</span><div class="project-icon"><span class="material-symbols-rounded">travel_explore</span></div><h3>Home Rental Info Scraper</h3><p>A data-focused scraper for collecting and organizing home rental information.</p><div class="project-stats"><span><i class="lang-dot html"></i> HTML</span><strong><span class="material-symbols-rounded">commit</span> 140 commits</strong></div><span class="project-arrow material-symbols-rounded">north_east</span></a>
+              <a class="project-card" href="https://github.com/Masud2017/air_reservation_web_version" target="_blank" rel="noopener"><span class="project-rank">02</span><div class="project-icon"><span class="material-symbols-rounded">flight_takeoff</span></div><h3>Air Reservation Web</h3><p>A web-based air reservation system built with PHP.</p><div class="project-stats"><span><i class="lang-dot php"></i> PHP</span><strong><span class="material-symbols-rounded">commit</span> 34 commits</strong></div><span class="project-arrow material-symbols-rounded">north_east</span></a>
+              <a class="project-card" href="https://github.com/Masud2017/ecommerce_invocie_restapi" target="_blank" rel="noopener"><span class="project-rank">03</span><div class="project-icon"><span class="material-symbols-rounded">receipt_long</span></div><h3>E-commerce Invoice API</h3><p>A web service created for an e-commerce startup.</p><div class="project-stats"><span><i class="lang-dot java"></i> Java</span><strong><span class="material-symbols-rounded">commit</span> 23 commits</strong></div><span class="project-arrow material-symbols-rounded">north_east</span></a>
+              <a class="project-card" href="https://github.com/Masud2017/workloaddata_client_server" target="_blank" rel="noopener"><span class="project-rank">04</span><div class="project-icon"><span class="material-symbols-rounded">dns</span></div><h3>Workload Data Client/Server</h3><p>A client-server system for working with and presenting workload data.</p><div class="project-stats"><span><i class="lang-dot html"></i> HTML</span><strong><span class="material-symbols-rounded">commit</span> 15 commits</strong></div><span class="project-arrow material-symbols-rounded">north_east</span></a>
+              <a class="project-card" href="https://github.com/Masud2017/proxy_crawler" target="_blank" rel="noopener"><span class="project-rank">05</span><div class="project-icon"><span class="material-symbols-rounded">hub</span></div><h3>Proxy Crawler</h3><p>A Go-based crawler for discovering and collecting proxy endpoints.</p><div class="project-stats"><span><i class="lang-dot go"></i> Go</span><strong><span class="material-symbols-rounded">commit</span> 13 commits</strong></div><span class="project-arrow material-symbols-rounded">north_east</span></a>
+            </div>
+            <small class="commit-note">Commit totals use GitHub&rsquo;s public default-branch contributor data.</small>
+          </div>
+        </section>
+        <section class="creator-support-card">
+          <div class="support-photo-wrap">
+            <img src="assets/creator-photo.png" alt="Creator of LingoLoop wearing a red varsity jacket">
+            <div class="creator-stamp"><span class="material-symbols-rounded">favorite</span><div><b>Built with heart</b><small>for language learners</small></div></div>
+          </div>
+          <div class="support-content">
+            <span class="support-kicker"><span class="material-symbols-rounded">local_cafe</span> SUPPORT THE PROJECT</span>
+            <h2>Buy me a coffee.<br><em>Fuel the next hello.</em></h2>
+            <p>LingoLoop is built to make genuine conversation available to everyone. If it helped you find your voice&mdash;or a new friend&mdash;you can support its next chapter.</p>
+            <form class="coffee-form" id="coffeeForm">
+              <fieldset><legend>Choose an amount</legend><div class="coffee-amounts"><button type="button" data-amount="3">Coffee $3</button><button type="button" class="active" data-amount="5">Coffee $5</button><button type="button" data-amount="10">Coffee $10</button><label><span>$</span><input id="customDonation" type="number" min="1" max="1000" placeholder="Custom" aria-label="Custom donation amount"></label></div></fieldset>
+              <label class="support-note">Leave a note <span>optional</span><textarea id="supportMessage" maxlength="240" placeholder="Keep building&mdash;this community matters!"></textarea></label>
+              <label class="donor-opt-in"><input id="showDonationPublicly" type="checkbox" checked> Show me as a supporter for 30 days</label>
+              <button class="coffee-submit" type="submit"><span class="material-symbols-rounded">local_cafe</span><span>Buy me a coffee</span><span class="material-symbols-rounded">arrow_forward</span></button>
+              <small class="payment-note"><span class="material-symbols-rounded">lock</span> Payment opens securely with your configured provider.</small>
+            </form>
+            <section class="donor-wall" aria-labelledby="donorWallTitle">
+              <div><span class="support-kicker"><span class="material-symbols-rounded">volunteer_activism</span> RECENT SUPPORTERS</span><h3 id="donorWallTitle">Coffee heroes from the last 30 days</h3></div>
+              <div class="donor-list" id="donorList"><p>No public supporters yet. Be the first coffee hero.</p></div>
+            </section>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="steps" id="how">
+      <div><span class="kicker">NO LESSON PLANS. NO PRESSURE.</span><h2>Just show up<br>and <em>speak.</em></h2></div>
+      <div class="step-list">
+        <article><span>01</span><div><h3>Pick your language</h3><p>Browse live rooms by language, level, or topic.</p></div></article>
+        <article><span>02</span><div><h3>Listen, then jump in</h3><p>Stay quiet until you feel ready. There is no rush.</p></div></article>
+        <article><span>03</span><div><h3>Make the world smaller</h3><p>Build fluency and friendships across every border.</p></div></article>
+      </div>
+    </section>
+  </main>
+
+  <footer id="community"><a class="brand" href="#"><span class="brand-mark"><i></i><i></i><i></i></span><span>Lingo<span>Loop</span></span></a><p>Different accents. One world.</p><span>&copy; 2026 LingoLoop</span></footer>
+
+  <section class="call-screen" id="callScreen" aria-hidden="true">
+    <header class="call-header">
+      <a class="brand call-brand" href="#"><span class="brand-mark"><i></i><i></i><i></i></span><span>Lingo<span>Loop</span></span></a>
+      <div class="call-status"><i></i><span>Connected</span></div>
+      <button class="leave-button" id="leaveRoom">Leave room</button>
+    </header>
+    <main class="call-main">
+      <div class="call-info"><span class="call-language" id="callLanguage">REAL ROOM</span><h2 id="callTitle">Your room</h2><p>Be kind, take turns, and enjoy the conversation.</p></div>
+      <div class="speaker-grid" id="speakerGrid">
+        <article class="speaker you" id="selfSpeaker"><div class="speaker-avatar lavender">YOU<span class="mic-chip muted" id="selfMicChip">&times;</span></div><h3>You <span>(listener)</span></h3><p id="selfStatus">Microphone off</p></article>
+      </div>
+      <p class="listener-count">Waiting for real participants to join.</p>
+      <section class="room-activities" aria-labelledby="activitiesTitle">
+        <div class="activities-header">
+          <div>
+            <span class="material-symbols-rounded">extension</span>
+            <div><h3 id="activitiesTitle">Room activities</h3><small>Chess, cards, drawing, and screen share sync live for everyone.</small></div>
+          </div>
+          <div class="activity-tabs" role="tablist" aria-label="Room activities">
+            <button type="button" class="active" data-activity-tab="chess">Games</button>
+            <button type="button" data-activity-tab="cards">Cards</button>
+            <button type="button" data-activity-tab="draw">Draw</button>
+            <button type="button" data-activity-tab="pomodoro">Pomodoro</button>
+            <button type="button" data-activity-tab="screen">Screen</button>
+          </div>
+        </div>
+        <div class="activity-panel active" data-activity-panel="chess">
+          <div class="external-games"><b>Free external games</b><p>Host a game on a free platform, then share the link in chat.</p><a href="https://lichess.org/" target="_blank" rel="noopener">Chess on Lichess</a><a href="https://playingcards.io/" target="_blank" rel="noopener">Cards on PlayingCards.io</a><a href="https://skribbl.io/" target="_blank" rel="noopener">Drawing on Skribbl.io</a></div>
+        </div>
+        <div class="activity-panel" data-activity-panel="cards">
+          <div class="cards-toolbar"><b>Shared card table</b><button type="button" id="drawCardButton">Draw card</button><button type="button" id="clearCardsButton">Clear</button></div>
+          <div class="card-table" id="cardTable"><p>No cards yet. Draw one for the room.</p></div>
+        </div>
+        <div class="activity-panel" data-activity-panel="draw">
+          <div class="draw-toolbar"><b>Shared drawing board</b><input type="color" id="drawColor" value="#6b8f46" aria-label="Drawing color"><button type="button" id="clearDrawingButton">Clear</button></div>
+          <canvas id="drawingCanvas" width="760" height="260" aria-label="Shared drawing canvas"></canvas>
+        </div>
+        <div class="activity-panel" data-activity-panel="pomodoro">
+          <div class="pomodoro-panel">
+            <div class="pomodoro-main">
+              <span class="profile-kicker">PERSONAL TIMER &middot; LIVE TO ROOM</span>
+              <div class="pomodoro-time" id="pomodoroTime">25:00</div>
+              <div class="pomodoro-status" id="pomodoroStatus">Ready to focus</div>
+              <div class="pomodoro-controls">
+                <button type="button" id="pomodoroStart">Start</button>
+                <button type="button" id="pomodoroPause">Pause</button>
+                <button type="button" id="pomodoroResume">Resume</button>
+                <button type="button" id="pomodoroRestart">Restart</button>
+              </div>
+            </div>
+            <div class="pomodoro-settings">
+              <label>Focus minutes<input id="pomodoroMinutes" type="number" min="1" max="120" value="25"></label>
+              <label>Completion sound<select id="pomodoroSound"><option value="bell">Bell</option><option value="chime">Chime</option><option value="soft">Soft ping</option><option value="digital">Digital</option><option value="zen">Zen bowl</option><option value="arcade">Arcade</option><option value="birds">Birds</option><option value="waves">Waves</option><option value="piano">Piano</option><option value="sparkle">Sparkle</option></select></label>
+              <button type="button" id="pomodoroPreviewSound">Preview sound</button>
+            </div>
+          </div>
+          <div class="pomodoro-room">
+            <div><b>Room timers</b><small>Everyone can see each member&rsquo;s timer state live.</small></div>
+            <div class="pomodoro-members" id="pomodoroMembers"><p>No timers active yet.</p></div>
+          </div>
+        </div>
+        <div class="activity-panel" data-activity-panel="screen">
+          <div class="screen-toolbar"><b>Screen share</b><button type="button" id="screenShareButton">Share screen</button><button type="button" id="screenAudioButton" disabled>Unmute device sound</button><small id="screenShareStatus">Nobody is sharing right now.</small></div>
+          <video id="screenShareVideo" autoplay playsinline controls hidden></video>
+        </div>
+      </section>
+      <section class="irc-panel" aria-labelledby="chatTitle">
+        <div class="irc-header">
+          <div><span class="irc-hash">#</span><div><h3 id="chatTitle">room-chat</h3><small>IRC-style live channel</small></div></div>
+          <span class="irc-online"><i></i> connected</span>
+        </div>
+        <div class="irc-messages" id="ircMessages" aria-live="polite">
+          <div class="irc-system">Welcome to the room. Be curious and kind.</div>
+        </div>
+        <div class="behavior-status">Behaviour points: <b data-behavior-points>5000</b> / 5000</div>
+        <div class="strike-status" id="channelStrikeStatus">Safety strikes: <b>0/3</b></div>
+        <form class="irc-compose" id="ircForm">
+          <span class="irc-prompt">&rsaquo;</span>
+          <input id="ircInput" maxlength="280" autocomplete="off" placeholder="Message #room-chat" aria-label="Chat message">
+          <button type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+    <div class="call-controls">
+      <button class="control-button" id="muteButton" aria-pressed="true"><span id="muteIcon">&#8856;</span><small id="muteLabel">Unmute</small></button>
+      <button class="control-button" id="handButton" aria-pressed="false"><span>&#9995;</span><small>Raise hand</small></button>
+      <button class="control-button"><span>&bull;&bull;&bull;</span><small>More</small></button>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="closeModal" aria-label="Close">&times;</button>
+      <span class="modal-icon"><span class="material-symbols-rounded">forum</span></span><h2 id="modalTitle">Create a conversation</h2><p>Choose a language and give people something fun to talk about.</p>
+      <form id="roomForm">
+        <label>Room name<input name="name" required maxlength="48" placeholder="e.g. Sunday coffee chat"></label>
+        <label>Language<select name="language"><option>English</option><option>Spanish</option><option>French</option><option>Japanese</option><option>German</option><option>Portuguese</option></select></label>
+        <label>Level<select name="level"><option>Beginner</option><option>Elementary</option><option>Intermediate</option><option>Upper intermediate</option><option>Advanced</option><option>Fluent</option><option>Native practice</option><option>All levels</option></select></label>
+        <label>Member limit<input name="memberLimit" type="number" min="2" max="100" value="12" required></label>
+        <button class="button button-primary" type="submit">Create room &rarr;</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="auth-backdrop" id="authBackdrop" aria-hidden="true">
+    <section class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <button class="modal-close" id="closeAuth" aria-label="Close">&times;</button>
+      <div class="auth-logo brand-mark"><i></i><i></i><i></i></div>
+      <h2 id="authTitle">Welcome to LingoLoop</h2>
+      <p>One account, a whole world of conversations.</p>
+      <div class="auth-tabs"><button class="active" data-auth-mode="login">Log in</button><button data-auth-mode="signup">Create account</button></div>
+      <button class="google-auth" id="googleAuth"><span class="google-g">G</span> Continue with Google</button>
+      <div class="auth-divider"><span>or use email</span></div>
+      <form id="authForm">
+        <label id="usernameField" hidden>Your name<input id="authUsername" autocomplete="name" maxlength="30" placeholder="Your first or display name"></label>
+        <label>Email<input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="authPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters"></label>
+        <button class="button button-primary auth-submit" type="submit">Log in</button>
+      </form>
+      <p class="auth-note" id="authNote">Firebase project setup is required before sign-in can connect.</p>
+    </section>
+  </div>
+
+  <div class="auth-backdrop" id="profileBackdrop" aria-hidden="true">
+    <section class="auth-card profile-card" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+      <button class="modal-close" id="closeProfile" aria-label="Close">&times;</button>
+      <h2 id="profileTitle">Your profile</h2><p>Choose how you show up in conversations.</p>
+      <div class="current-profile"><img id="profileAvatar" alt="Current avatar"><div><strong id="profileName"></strong><small id="profileEmail"></small></div></div>
+      <section class="profile-todos compact" id="profileTodoCard">
+        <div class="todo-head">
+          <div><span class="profile-kicker">PRIORITY TASKS</span><h3>Study todo list</h3></div>
+          <span class="todo-alert" id="todoAlertBadge" hidden>0 due</span>
+        </div>
+        <form class="todo-form" id="todoForm">
+          <input id="todoText" maxlength="90" placeholder="e.g. Practice speaking for 20 minutes" aria-label="Todo task">
+          <select id="todoPriority" aria-label="Priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+          <input id="todoDue" type="datetime-local" aria-label="Reminder time">
+          <button type="submit"><span class="material-symbols-rounded">add</span></button>
+        </form>
+        <div class="todo-list" id="todoList"><p>No tasks yet. Add one tiny mission.</p></div>
+      </section>
+      <form class="handle-form" id="handleForm"><label>Your unique ID<div class="handle-input"><span>@</span><input id="profileHandle" maxlength="30" autocomplete="off" aria-describedby="handleHelp"></div></label><small id="handleHelp">People can find you using this ID.</small><button class="button button-primary" type="submit">Save ID</button></form>
+      <h3>Choose an avatar</h3><div class="avatar-picker" id="avatarPicker"></div>
+      <label class="profile-upload-button">Upload profile picture<input id="profilePhotoUpload" type="file" accept="image/*" hidden></label>
+      <div class="profile-page-actions"><button class="button button-outline" id="viewMyPublicProfile" type="button"><span class="material-symbols-rounded">account_circle</span> Public profile</button><button class="button button-outline" id="openSettings" type="button"><span class="material-symbols-rounded">settings</span> Settings</button></div>
+      <button class="button button-outline signout-button" id="signOutButton">Sign out</button>
+    </section>
+  </div>
+
+  <section class="account-page" id="memberProfilePage" aria-hidden="true">
+    <header><button class="account-back" id="closeMemberProfile" type="button"><span class="material-symbols-rounded">arrow_back</span></button><a class="brand" href="#"><span class="brand-mark"><i></i><i></i><i></i></span><span>Lingo<span>Loop</span></span></a><span></span></header>
+    <main class="member-profile-content"><div class="profile-loading" id="profileLoading">Loading profile&hellip;</div><div id="memberProfileContent" hidden><section class="member-hero"><img id="memberPageAvatar" alt="Member avatar"><div><span class="profile-kicker">COMMUNITY MEMBER</span><h1 id="memberPageName"></h1><p id="memberPageHandle"></p></div><div class="profile-stat"><b id="memberChannelCount">0</b><span>Channels created</span></div><div class="profile-stat"><b id="memberBehaviorPoints">5000</b><span>Behaviour points</span></div></section><section class="profile-todos public-page" id="memberTodoSection" hidden><div class="todo-head"><div><span class="profile-kicker">PRIVATE DASHBOARD</span><h2>My priority tasks</h2></div><span class="todo-alert" id="memberTodoAlert" hidden>0 due</span></div><div class="todo-list" id="memberTodoList"><p>No tasks yet.</p></div></section><section class="profile-lingoshout profile-todos public-page" id="memberLingoShoutSection" hidden><div class="todo-head"><div><span class="profile-kicker">LINGOSHOUT</span><h2>Post from your profile</h2></div></div><p class="muted-text">Share a quick language-learning progress update with the community.</p><form class="lingoshout-form" data-lingoshout-form><textarea data-lingoshout-input maxlength="280" placeholder="What did you practice today?"></textarea><button class="button button-primary" type="submit">Shout</button></form></section><section class="profile-channels"><div><span class="profile-kicker">CREATOR HISTORY</span><h2>Channels by this member</h2></div><div class="profile-channel-grid" id="profileChannelGrid"></div></section></div></main>
+  </section>
+
+  <section class="account-page" id="settingsPage" aria-hidden="true">
+    <header><button class="account-back" id="closeSettings" type="button"><span class="material-symbols-rounded">arrow_back</span></button><h2>Account settings</h2><span></span></header>
+    <main class="settings-content"><aside><span class="material-symbols-rounded">shield_person</span><h1>Security that stays out of your way.</h1><p>Manage sign-in methods and protect your LingoLoop account.</p></aside><div class="settings-stack"><section class="settings-card"><div class="settings-card-title"><span class="material-symbols-rounded">key</span><div><h2>Password</h2><p id="passwordModeHelp">Change or create your password.</p></div></div><form id="passwordSettingsForm"><label id="currentPasswordField">Current password<input id="currentPassword" type="password" autocomplete="current-password"></label><label>New password<input id="newPassword" type="password" minlength="6" autocomplete="new-password" required></label><label>Confirm new password<input id="confirmPassword" type="password" minlength="6" autocomplete="new-password" required></label><button class="button button-primary" type="submit">Save password</button></form></section><section class="settings-card"><div class="settings-card-title"><span class="material-symbols-rounded">link</span><div><h2>Connected sign-in</h2><p>Link Google to this same account&mdash;your profile and channels stay together.</p></div></div><button class="google-auth" id="linkGoogleAccount" type="button"><span class="google-g">G</span> Link Google account</button><small id="providerStatus"></small></section><section class="settings-card ad-free-settings-card"><div class="settings-card-title"><span class="material-symbols-rounded">hide_source</span><div><h2>Ad-free subscription</h2><p>Remove Google ads for &euro;5/month.</p></div></div><div class="mini-price"><b>&euro;5</b><span>/ month</span></div><button class="button button-primary" id="settingsSubscribeAdFree" type="button">Go ad-free</button><small id="settingsAdFreeStatus">Free plan: ads are visible.</small></section><section class="settings-card mfa-card"><div class="settings-card-title"><span class="material-symbols-rounded">phonelink_lock</span><div><h2>Multi-factor authentication</h2><p>Phone OTP adds a second verification step.</p></div></div><div class="setting-unavailable"><span class="material-symbols-rounded">info</span><p><b>Not enabled yet</b><small>Firebase phone MFA uses SMS and may require Identity Platform billing. It is intentionally paused to avoid unexpected charges.</small></p></div><button class="button button-outline" type="button" disabled>Enable phone MFA</button></section></div></main>
+  </section>
+
+  <section class="account-page notification-pagelet" id="notificationSettingsPagelet" aria-hidden="true">
+    <main class="settings-content">
+      <div class="settings-stack">
+        <section class="settings-card">
+          <div class="settings-card-title"><span class="material-symbols-rounded">notifications_active</span><div><h2>Notifications</h2><p>Get alerts for friend messages and friend channel joins.</p></div></div>
+          <label>Firebase Web Push VAPID key<input id="fcmVapidKey" placeholder="Optional for full FCM token registration"></label>
+          <button class="button button-primary" id="enableNotifications" type="button">Enable notifications</button>
+          <small id="notificationStatus">Local browser notifications work now; FCM sending needs Firebase server credentials.</small>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <div class="share-backdrop" id="shareBackdrop" aria-hidden="true">
+    <section class="share-sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+      <button class="share-close" id="closeShare" type="button" aria-label="Close share options"><span class="material-symbols-rounded">close</span></button>
+      <div class="share-symbol"><span class="material-symbols-rounded">share</span></div>
+      <h2 id="shareTitle">Share LingoLoop</h2>
+      <p>Invite your friends and practice a language together.</p>
+      <div class="share-networks">
+        <a id="shareWhatsApp" target="_blank" rel="noopener"><b>WA</b><span>WhatsApp</span></a>
+        <a id="shareTelegram" target="_blank" rel="noopener"><b>TG</b><span>Telegram</span></a>
+        <a id="shareFacebook" target="_blank" rel="noopener"><b>f</b><span>Facebook</span></a>
+        <a id="shareX" target="_blank" rel="noopener"><b>X</b><span>X</span></a>
+      </div>
+      <div class="share-link-row"><span class="material-symbols-rounded">link</span><input id="shareLink" readonly aria-label="Platform link"><button id="copyShareLink" type="button">Copy</button></div>
+      <button class="button button-primary share-more" id="shareMore" type="button"><span class="material-symbols-rounded">apps</span> More apps</button>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <aside class="location-permission" id="locationPermissionPrompt" hidden aria-live="polite">
+    <span class="material-symbols-rounded">location_on</span>
+    <div>
+      <b>Enable location?</b>
+      <p id="locationPermissionText">Allow location so LingoLoop can save country and area metadata for safety and trend stats.</p>
+    </div>
+    <button id="allowLocationNow" type="button">Allow</button>
+    <button id="dismissLocationPrompt" type="button" aria-label="Dismiss location prompt"><span class="material-symbols-rounded">close</span></button>
+  </aside>
+  <button class="study-bot-fab" id="studyBotFab" aria-label="Open study assistant"><span class="material-symbols-rounded">smart_toy</span></button>
+  <button class="notifications-fab" id="notificationsFab" aria-label="Open notifications"><span class="material-symbols-rounded">notifications</span><i id="notificationBadge" hidden>0</i></button>
+  <button class="messages-fab" id="messagesFab" aria-label="Open friend messages"><span class="material-symbols-rounded">forum</span><i id="messageBadge" hidden>0</i></button>
+  <aside class="study-bot" id="studyBot" aria-hidden="true">
+    <header><div><span class="material-symbols-rounded">school</span><div><h2>Study helper</h2><small id="studyBotSubtitle">Plans, practice, and useful resources</small></div></div><div class="study-window-actions"><button id="newStudyChat" type="button" aria-label="New study chat"><span class="material-symbols-rounded">add_comment</span></button><button id="minimizeStudyBot" type="button" aria-label="Minimize study assistant"><span class="material-symbols-rounded">remove</span></button><button id="maximizeStudyBot" type="button" aria-label="Maximize study assistant"><span class="material-symbols-rounded">open_in_full</span></button><button id="closeStudyBot" type="button" aria-label="Close study assistant"><span class="material-symbols-rounded">close</span></button></div></header>
+    <div class="study-session-bar" id="studySessionBar" aria-label="Study helper chat sessions"></div>
+    <div class="study-bot-messages" id="studyBotMessages" aria-live="polite"></div>
+    <div class="study-suggestions"><button type="button" data-study-prompt="Make me a 7 day plan to improve my English speaking">7-day speaking plan</button><button type="button" data-study-prompt="Give me beginner German practice questions">Practice questions</button><button type="button" data-study-prompt="Find useful resources for Japanese grammar">Find resources</button></div>
+    <form class="study-bot-form" id="studyBotForm"><input id="studyBotInput" maxlength="500" placeholder="Ask for a study plan, explanation, or resources..." autocomplete="off"><button type="submit"><span class="material-symbols-rounded">send</span></button></form>
+  </aside>
+  <aside class="notifications-panel" id="notificationsPanel" aria-hidden="true">
+    <header><div><span class="material-symbols-rounded">notifications_active</span><div><h2>Notifications</h2><small id="notificationSummary">Nothing new yet</small></div></div><button id="closeNotifications" aria-label="Close notifications"><span class="material-symbols-rounded">close</span></button></header>
+    <div class="notifications-list" id="notificationsList"><p>No notifications yet. Friend requests, messages, and channel joins will appear here.</p></div>
+    <footer><button id="markNotificationsRead" type="button">Mark all as read</button><button id="clearNotifications" type="button">Clear</button></footer>
+  </aside>
+  <aside class="friend-chat" id="friendChat" aria-hidden="true">
+    <header><div><span class="material-symbols-rounded">forum</span><div><h2>Messages</h2><small id="socketStatus">Connecting&hellip;</small></div></div><button id="closeFriendChat" aria-label="Close messages"><span class="material-symbols-rounded">close</span></button></header>
+    <div class="friend-chat-body">
+      <nav class="friends-sidebar"><form class="user-search" id="userSearchForm"><label for="userSearchInput">Find by unique ID</label><div><span>@</span><input id="userSearchInput" autocomplete="off" placeholder="maya_24"><button type="submit" aria-label="Search users"><span class="material-symbols-rounded">search</span></button></div></form><div class="user-results" id="userSearchResults"></div><section class="friend-requests"><div><b>Friend requests</b><button id="refreshFriendRequests" type="button">Refresh</button></div><div id="friendRequestsList"><p>No pending requests.</p></div></section><div class="friends-list" id="friendsList"><p>Add someone from a voice room to start chatting.</p></div></nav>
+      <section class="conversation" id="conversation">
+        <div class="conversation-empty" id="conversationEmpty"><span class="material-symbols-rounded">waving_hand</span><h3>Choose a friend</h3><p>Your private messages will appear here.</p></div>
+        <div class="conversation-active" id="conversationActive" hidden>
+          <div class="conversation-person"><div class="friend-avatar" id="conversationAvatar"></div><div class="conversation-person-copy"><h3 id="conversationName"></h3><small id="conversationRelation">Private conversation</small></div><div class="friend-actions"><button id="viewFriendProfileButton" type="button" title="View profile"><span class="material-symbols-rounded">account_circle</span><small>Profile</small></button><button id="blockFriendButton" type="button" title="Block friend"><span class="material-symbols-rounded">block</span><small>Block</small></button><button id="unfriendButton" type="button" title="Unfriend"><span class="material-symbols-rounded">person_remove</span><small>Unfriend</small></button></div></div>
+          <div class="direct-messages" id="directMessages" aria-live="polite"></div>
+          <div class="emoji-picker" id="emojiPicker" hidden></div>
+          <div class="behavior-status direct-behavior-status">Behaviour points: <b data-behavior-points>5000</b> / 5000</div>
+          <div class="strike-status direct-strike-status" id="directStrikeStatus">Safety strikes: <b>0/3</b></div>
+          <form class="direct-compose" id="directForm"><button type="button" id="emojiButton" aria-label="Choose emoji"><span class="material-symbols-rounded">mood</span></button><button type="button" id="fileButton" aria-label="Attach file"><span class="material-symbols-rounded">attach_file</span></button><input type="file" id="fileInput" hidden accept="image/*,.pdf,.txt,.doc,.docx"><input id="directInput" maxlength="2000" placeholder="Write a message&hellip;" autocomplete="off"><button class="send-direct" type="submit" aria-label="Send"><span class="material-symbols-rounded">send</span></button></form>
+        </div>
+      </section>
+    </div>
+  </aside>
+  <script src="app.js"></script>
+  <script type="module" src="auth.js"></script>
+  <script src="friend-chat.js"></script>
+  <script src="share.js"></script>
+  <script src="profile-page.js"></script>
+  <script src="donation-config.js"></script>
+  <script src="donation.js"></script>
+  <script src="study-bot.js"></script>
+  <script src="monetization.js"></script>
+  <script src="profile-todos.js"></script>
+  <script src="community.js"></script>
+  <script src="smooth-scroll.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,161 @@
+/* Friend chat rendering guard rails. Keeps text, emoji, file, and image messages stable. */
+.friend-chat,
+.friend-chat *{
+  box-sizing:border-box;
+}
+
+.friend-chat-body{
+  min-height:0;
+  grid-template-columns:210px minmax(0,1fr);
+}
+
+.conversation,
+.conversation-active{
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+}
+
+.conversation-active{
+  grid-template-rows:58px minmax(0,1fr) auto auto auto auto;
+}
+
+.direct-messages{
+  min-width:0;
+  min-height:0;
+  overflow:auto;
+  overscroll-behavior:contain;
+  display:flex;
+  flex-direction:column;
+  gap:11px;
+  padding:16px 20px 18px;
+}
+
+.direct-message{
+  display:block;
+  width:fit-content;
+  max-width:min(78%,360px);
+  min-width:0;
+  padding:10px 13px;
+  border-radius:18px;
+  font-size:12px;
+  line-height:1.45;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  contain:layout paint;
+  box-shadow:0 7px 18px rgba(7,22,12,.08);
+}
+
+.direct-message.mine{
+  align-self:flex-end;
+  margin-left:auto;
+  border-bottom-right-radius:7px;
+}
+
+.direct-message.theirs{
+  align-self:flex-start;
+  margin-right:auto;
+  border-bottom-left-radius:7px;
+}
+
+.direct-message.media-message{
+  max-width:min(82%,350px);
+  padding:8px;
+}
+
+.direct-media-frame{
+  width:min(280px,100%);
+  max-width:100%;
+  border-radius:14px;
+  overflow:hidden;
+  background:rgba(8,24,14,.12);
+}
+
+.direct-media-frame img,
+.direct-message img{
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:auto;
+  max-height:230px;
+  object-fit:contain;
+  margin:0;
+  border-radius:0;
+}
+
+.direct-file-link{
+  display:flex!important;
+  align-items:center;
+  gap:7px;
+  max-width:100%;
+  margin-top:7px;
+  padding:8px 10px;
+  border-radius:13px;
+  color:inherit;
+  background:rgba(255,255,255,.22);
+  font-weight:800;
+  line-height:1.25;
+  white-space:normal!important;
+  overflow-wrap:anywhere;
+  text-decoration:none;
+}
+
+.direct-message.emoji-only{
+  min-width:44px;
+  padding:10px 14px;
+  font-size:21px;
+  line-height:1.1;
+  text-align:center;
+  white-space:normal;
+}
+
+.emoji-picker{
+  max-height:104px;
+  overflow:auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+}
+
+.emoji-picker[hidden]{
+  display:none;
+}
+
+.emoji-picker button{
+  min-width:36px;
+  height:32px;
+  line-height:1;
+  border-radius:11px;
+}
+
+:root[data-theme="dark"] .direct-message{
+  box-shadow:0 8px 18px rgba(0,0,0,.22);
+}
+
+:root[data-theme="dark"] .direct-file-link{
+  background:rgba(255,255,255,.09);
+}
+
+@media(max-width:600px){
+  .friend-chat-body{
+    grid-template-columns:106px minmax(0,1fr);
+  }
+
+  .direct-messages{
+    padding:12px;
+    gap:9px;
+  }
+
+  .direct-message{
+    max-width:min(88%,280px);
+  }
+
+  .direct-message.media-message{
+    max-width:min(90%,270px);
+  }
+
+  .direct-media-frame{
+    width:min(230px,100%);
+  }
+}

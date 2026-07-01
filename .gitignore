@@ -1,0 +1,5 @@
+node_modules/
+firebase-admin*.json
+.env
+community-scores.json
+chat-blocks.json

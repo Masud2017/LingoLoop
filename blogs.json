@@ -1,0 +1,21 @@
+[
+  {
+    "id": "blog-1782672024486-tdj4ii",
+    "uid": "lC1GFqyurVTJss7pcRaUbRVcREj1",
+    "title": "YOYO blog",
+    "content": "AHa ha hah a has;ldkfhalksdfjai9uopwejf;lkasjdfpokasdnvlsd;km",
+    "author": {
+      "uid": "lC1GFqyurVTJss7pcRaUbRVcREj1",
+      "name": "Masud karim",
+      "handle": "@masud_17",
+      "avatar": "https://api.dicebear.com/9.x/thumbs/svg?seed=Mika&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf"
+    },
+    "likes": [
+      "U4cNQdR5yuNsOE8SjTbQ0ttOEZd2"
+    ],
+    "comments": [],
+    "blogAdRevenueCents": 0,
+    "creatorSharePercent": 80,
+    "createdAt": 1782672024486
+  }
+]

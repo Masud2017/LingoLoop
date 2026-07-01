@@ -1,0 +1,52 @@
+/* Final responsive polish for navigation and page chrome. */
+.site-header{
+  gap:18px;
+}
+
+.brand{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+.desktop-nav{
+  flex:1 1 auto;
+  min-width:0;
+  justify-content:center;
+}
+
+.desktop-nav a,
+.header-actions .button,
+.header-actions .text-button,
+.share-platform-button,
+.profile-chip{
+  white-space:nowrap;
+}
+
+.desktop-nav a{
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  padding-inline:clamp(10px,1.1vw,16px);
+  font-size:clamp(12px,.95vw,14px);
+}
+
+.header-actions{
+  flex:0 1 auto;
+  min-width:0;
+  gap:clamp(8px,1vw,16px);
+}
+
+.header-actions .button{
+  min-width:max-content;
+}
+
+@media(max-width:1120px){
+  .site-header{width:calc(100% - 18px);padding-inline:16px}
+  .desktop-nav{gap:4px}
+  .share-platform-button span:last-child{display:none}
+  .header-actions .button{padding-inline:16px}
+}
+
+@media(max-width:960px){
+  .desktop-nav{display:none}
+}
