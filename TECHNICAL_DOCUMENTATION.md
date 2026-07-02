@@ -4,6 +4,8 @@
 
 LingoLoop is a browser-based language practice platform with live rooms, WebRTC voice/screen sharing, WebSocket chat, Firebase authentication, moderation, social posting, blogs, notifications, premium gating, and monetization surfaces.
 
+The current project is intentionally a legacy single-service application. It is not using the abandoned microservice split. The frontend, API routes, WebSocket server, static assets, and prototype JSON persistence all run from the same Node.js service.
+
 ## Runtime
 
 - Frontend: static HTML, CSS, and vanilla JavaScript.
@@ -11,6 +13,16 @@ LingoLoop is a browser-based language practice platform with live rooms, WebRTC 
 - Real-time layer: WebSocket server on `/ws`.
 - Auth: Firebase Auth from `auth.js`.
 - Data persistence: local JSON files for prototype data, plus Firebase Realtime Database/Auth for user identity metadata.
+- Container runtime: Docker using `Dockerfile`.
+- Render deployment: Docker web service configured by `render.yaml`.
+
+The server reads:
+
+- `PORT`, default `4173`.
+- `HOST`, default `0.0.0.0`.
+- `DATA_DIR`, default project root locally, `/app/data` in Docker/Render.
+
+The app binds to `0.0.0.0` so it can run inside Docker containers and Render. Local browser access remains `http://localhost:4173`.
 
 ## Main Files
 
@@ -22,6 +34,126 @@ LingoLoop is a browser-based language practice platform with live rooms, WebRTC 
 - `community.js`: LingoShouts, blogs, payout info, trusted news.
 - `study-bot.js`: premium/trial-gated study helper.
 - `monetization.js`: ad-free subscription state, crypto placeholder, premium unlock.
+- `Dockerfile`: production container build for the legacy Node app.
+- `docker-compose.yml`: local Docker Compose setup with persistent volume.
+- `render.yaml`: Render Blueprint/Docker deployment definition.
+- `.dockerignore`: excludes local dependencies, secrets, and generated runtime files from the container image.
+
+## Architecture Boundary
+
+The app currently follows this shape:
+
+```text
+Browser
+  -> static files from Node server
+  -> HTTP API routes in server.js
+  -> WebSocket /ws in server.js
+  -> Firebase Auth / Realtime Database from browser modules
+  -> Hugging Face through backend proxy route
+```
+
+There is no separate frontend service, no separate API service, and no FastAPI backend in the current legacy version.
+
+## Docker
+
+Docker support is provided for the legacy single-service app.
+
+Files:
+
+- `Dockerfile`
+- `docker-compose.yml`
+- `.dockerignore`
+
+Build and run locally:
+
+```bash
+docker compose up --build
+```
+
+Open:
+
+```text
+http://localhost:4173
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+View logs:
+
+```bash
+docker compose logs -f
+```
+
+The container uses Node.js 20 Alpine, installs production dependencies with `npm ci --omit=dev`, exposes port `4173`, and includes a health check against `/`.
+
+The `.env` file is not copied into the image. Docker Compose passes `.env` at runtime through `env_file`.
+
+## Render Deployment
+
+Render deployment is configured through `render.yaml`.
+
+Render service settings:
+
+- Type: web service.
+- Runtime: Docker.
+- Plan: starter.
+- Region: Frankfurt.
+- Dockerfile: `./Dockerfile`.
+- Health check path: `/`.
+- Auto deploy: on commit.
+- Persistent disk: `lingoloop-data`, mounted at `/app/data`.
+
+Required Render environment variables:
+
+- `NODE_ENV=production`
+- `HOST=0.0.0.0`
+- `PORT=4173`
+- `DATA_DIR=/app/data`
+- `HUGGINGFACE_API_KEY` as a secret value.
+- `HUGGINGFACE_MODEL=meta-llama/Meta-Llama-3-8B-Instruct`
+
+Deployment flow:
+
+1. Push the project to GitHub.
+2. Open Render Dashboard.
+3. Create a new Blueprint.
+4. Connect the GitHub repository.
+5. Let Render read `render.yaml`.
+6. Add the secret `HUGGINGFACE_API_KEY`.
+7. Deploy.
+
+After deployment, add the Render domain to:
+
+- Firebase Authentication authorized domains.
+- Google sign-in provider configuration if needed.
+- Google AdSense site verification.
+- SEO files such as `sitemap.xml` and canonical domain values.
+
+## Persistent Data
+
+Prototype runtime data is stored in JSON files. Locally, files live in the project root unless `DATA_DIR` is set. In Docker and Render, the files are stored in `/app/data`.
+
+JSON data files include:
+
+- `community-scores.json`
+- `chat-blocks.json`
+- `user-identities.json`
+- `channels.json`
+- `friend-requests.json`
+- `notification-tokens.json`
+- `ip-bans.json`
+- `lingoshouts.json`
+- `blogs.json`
+- `creator-payouts.json`
+- `behavior-rewards.json`
+
+On Render, `/app/data` is backed by the persistent disk configured in `render.yaml`. This keeps prototype data across restarts and deploys.
+
+For production, this JSON persistence should be replaced with a managed database.
 
 ## Authentication
 

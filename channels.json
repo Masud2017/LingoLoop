@@ -1,16 +1,1 @@
-{
-  "f887001d-7bd4-4539-841a-8f1b4cdf6408": {
-    "id": "f887001d-7bd4-4539-841a-8f1b4cdf6408",
-    "name": "jhg",
-    "language": "English",
-    "level": "Beginner",
-    "memberLimit": 12,
-    "creatorId": "U4cNQdR5yuNsOE8SjTbQ0ttOEZd2",
-    "creatorName": "hulu",
-    "creatorHandle": "@hulu_13",
-    "creatorAvatar": "https://api.dicebear.com/9.x/thumbs/svg?seed=Sage&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
-    "createdAt": 1782598582656,
-    "lastActivityAt": 1782684447408,
-    "expiresAt": 1782943647408
-  }
-}
+{}

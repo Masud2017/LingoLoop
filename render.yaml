@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: lingoloop
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 4173
+      - key: DATA_DIR
+        value: /app/data
+      - key: HUGGINGFACE_API_KEY
+        sync: false
+      - key: HUGGINGFACE_MODEL
+        value: meta-llama/Meta-Llama-3-8B-Instruct
+    disk:
+      name: lingoloop-data
+      mountPath: /app/data
+      sizeGB: 1

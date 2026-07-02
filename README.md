@@ -30,6 +30,26 @@ docker compose down
 docker compose logs -f
 ```
 
+## Deploy on Render
+
+This repo includes `render.yaml`, so the easiest path is a Render Blueprint deploy:
+
+1. Push this project to a GitHub repository.
+2. Open Render Dashboard.
+3. Choose **New** -> **Blueprint**.
+4. Connect the GitHub repository.
+5. Render will read `render.yaml` and create the Docker web service.
+6. Add the secret environment variable `HUGGINGFACE_API_KEY` when Render asks for it.
+7. Deploy.
+
+After deploy, copy your Render URL, for example `https://your-app.onrender.com`, and add that domain in:
+
+- Firebase Authentication -> Settings -> Authorized domains
+- Google sign-in provider settings, if needed
+- Google AdSense site verification
+
+The Render service uses a persistent disk mounted at `/app/data` so JSON runtime data can survive deploys and restarts.
+
 ## Included
 
 - Responsive landing page and live-room directory
