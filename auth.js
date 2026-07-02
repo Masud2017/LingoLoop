@@ -1,6 +1,6 @@
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import { getDatabase, ref, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
 const configured = !firebaseConfig.apiKey.startsWith('YOUR_');
@@ -66,6 +66,18 @@ function googleProvider(){
   const provider=new GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
   return provider;
+}
+async function finishGoogleUser(user,message='Welcome back'){
+  if(!user.photoURL)await updateProfile(user,{photoURL:randomAvatar()});
+  await showUser(user);
+  close(authBackdrop);
+  toast(message);
+}
+async function redirectToGoogle(provider){
+  sessionStorage.setItem('lingo-google-auth-origin',location.origin);
+  sessionStorage.setItem('lingo-google-auth-path',`${location.pathname}${location.search}${location.hash}`);
+  toast('Opening Google sign-in on this domain...');
+  await signInWithRedirect(auth,provider);
 }
 async function getIdentity(user) {
   const name = user.displayName || user.email.split('@')[0];
@@ -222,7 +234,7 @@ if (configured) {
   const app = initializeApp(firebaseConfig); auth = getAuth(app); database = getDatabase(app);
   setPersistence(auth,browserLocalPersistence).catch(error=>console.warn('Auth persistence failed',error));
   onAuthStateChanged(auth, async user => { if(user) await showUser(user); else { document.body.classList.remove('logged-in'); window.lingoUser=null; window.dispatchEvent(new CustomEvent('lingo-auth-changed',{detail:null})); profileChip.hidden=true;if(openMyProfileShortcut)openMyProfileShortcut.hidden=true; document.getElementById('authLogin').hidden=false; document.getElementById('openSignup').hidden=false; } });
-  getRedirectResult(auth).then(async result=>{if(!result?.user)return;if(!result.user.photoURL)await updateProfile(result.user,{photoURL:randomAvatar()});await showUser(result.user);close(authBackdrop);toast('Welcome back')}).catch(error=>toast(error.message.replace('Firebase: ','')));
+  getRedirectResult(auth).then(async result=>{if(!result?.user)return;sessionStorage.removeItem('lingo-google-auth-origin');sessionStorage.removeItem('lingo-google-auth-path');await finishGoogleUser(result.user,'Welcome back')}).catch(error=>toast(error.code==='auth/unauthorized-domain'?authDomainHelp():error.message.replace('Firebase: ','')));
   document.getElementById('authNote').hidden = true;
 }
 
@@ -243,11 +255,12 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
   if(useAuthorizedLocalhostForGoogle())return;
   const button=document.getElementById('googleAuth');
   const provider=googleProvider();
+  const wasLinking=!!auth.currentUser;
   try {
     button.disabled=true;
     button.textContent='Opening Google...';
-    const result=auth.currentUser?await linkWithPopup(auth.currentUser,provider):await signInWithPopup(auth,provider);
-    if(!result.user.photoURL)await updateProfile(result.user,{photoURL:randomAvatar()});await showUser(result.user);close(authBackdrop);toast(auth.currentUser?'Google connected to your account':'Welcome back');
+    const result=wasLinking?await linkWithPopup(auth.currentUser,provider):await signInWithPopup(auth,provider);
+    await finishGoogleUser(result.user,wasLinking?'Google connected to your account':'Welcome back');
   } catch(error){
     if(error.code==='auth/account-exists-with-different-credential'){
       const email=error.customData?.email||document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
@@ -255,7 +268,8 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
       try{const signedIn=await signInWithEmailAndPassword(auth,email,password),credential=GoogleAuthProvider.credentialFromError(error);if(credential)await linkWithCredential(signedIn.user,credential);await showUser(signedIn.user);close(authBackdrop);toast('Google linked to your existing account')}catch(linkError){toast(linkError.message.replace('Firebase: ',''))}
     }else if(error.code==='auth/unauthorized-domain')toast(authDomainHelp());
     else if(['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request'].includes(error.code)&&!auth.currentUser){
-      toast('Google popup did not complete. Allow popups for this site, then try again.');
+      await redirectToGoogle(provider);
+      return;
     }
     else toast(error.message.replace('Firebase: ',''));
   } finally {
