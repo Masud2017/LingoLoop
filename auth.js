@@ -258,7 +258,11 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
   const wasLinking=!!auth.currentUser;
   try {
     button.disabled=true;
-    button.textContent='Opening Google...';
+    button.textContent=isLocalhost?'Opening Google...':'Redirecting to Google...';
+    if(!isLocalhost&&!wasLinking){
+      await redirectToGoogle(provider);
+      return;
+    }
     const result=wasLinking?await linkWithPopup(auth.currentUser,provider):await signInWithPopup(auth,provider);
     await finishGoogleUser(result.user,wasLinking?'Google connected to your account':'Welcome back');
   } catch(error){
