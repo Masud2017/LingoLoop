@@ -1,6 +1,6 @@
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import { getDatabase, ref, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
 const configured = !firebaseConfig.apiKey.startsWith('YOUR_');
@@ -258,12 +258,12 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
   const wasLinking=!!auth.currentUser;
   try {
     button.disabled=true;
-    button.textContent=isLocalhost?'Opening Google...':'Redirecting to Google...';
-    if(!isLocalhost&&!wasLinking){
+    button.textContent=wasLinking?'Opening Google...':'Redirecting to Google...';
+    if(!wasLinking){
       await redirectToGoogle(provider);
       return;
     }
-    const result=wasLinking?await linkWithPopup(auth.currentUser,provider):await signInWithPopup(auth,provider);
+    const result=await linkWithPopup(auth.currentUser,provider);
     await finishGoogleUser(result.user,wasLinking?'Google connected to your account':'Welcome back');
   } catch(error){
     if(error.code==='auth/account-exists-with-different-credential'){
