@@ -207,6 +207,34 @@ function extractNewsImage(item='',content='',description=''){
   ];
   return candidates.map(cleanNewsImageUrl).find(Boolean)||'';
 }
+async function fetchNewsPageImage(link){
+  if(!/^https?:\/\//i.test(String(link||'')))return '';
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),4500);
+  try{
+    const response=await fetch(link,{headers:{'User-Agent':'LingoLoop/1.0'},signal:controller.signal});
+    if(!response.ok)return '';
+    const html=(await response.text()).slice(0,220000);
+    const candidates=[
+      (html.match(/<meta\b[^>]*\bproperty=["']og:image(?::secure_url)?["'][^>]*\bcontent=["']([^"']+)["']/i)||[])[1],
+      (html.match(/<meta\b[^>]*\bcontent=["']([^"']+)["'][^>]*\bproperty=["']og:image(?::secure_url)?["']/i)||[])[1],
+      (html.match(/<meta\b[^>]*\bname=["']twitter:image(?::src)?["'][^>]*\bcontent=["']([^"']+)["']/i)||[])[1],
+      (html.match(/<meta\b[^>]*\bcontent=["']([^"']+)["'][^>]*\bname=["']twitter:image(?::src)?["']/i)||[])[1]
+    ];
+    return candidates.map(cleanNewsImageUrl).find(Boolean)||'';
+  }catch(_){
+    return '';
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+async function fillMissingNewsImages(items){
+  const missing=items.filter(item=>!item.image).slice(0,8);
+  await Promise.all(missing.map(async item=>{
+    item.image=await fetchNewsPageImage(item.link);
+  }));
+  return items;
+}
 function trustedNewsFallback(){
   const bbc=[
     ['Open BBC latest news','https://www.bbc.com/news'],
@@ -244,7 +272,7 @@ async function fetchTrustedNews(){
       });
     }catch(error){console.warn('Trusted news feed failed:',feed.source,error.message)}
   }
-  if(results.length)return results;
+  if(results.length)return fillMissingNewsImages(results);
   return trustedNewsFallback();
 }
 

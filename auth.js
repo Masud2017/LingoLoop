@@ -1,10 +1,14 @@
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import { getDatabase, ref, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
 const configured = !firebaseConfig.apiKey.startsWith('YOUR_');
-if(location.hostname==='127.0.0.1'){
+const currentHost = location.hostname.toLowerCase();
+const isLoopbackIp = currentHost === '127.0.0.1';
+const isLocalhost = currentHost === 'localhost' || isLoopbackIp;
+const isProductionHost = ['lingoloop.space','www.lingoloop.space'].includes(currentHost);
+if(isLoopbackIp){
   location.replace(`http://localhost:${location.port||4173}${location.pathname}${location.search}${location.hash}`);
 }
 const authBackdrop = document.getElementById('authBackdrop');
@@ -46,11 +50,17 @@ function requireConfig() {
   toast('Add your Firebase configuration in firebase-config.js'); return false;
 }
 function useAuthorizedLocalhostForGoogle(){
-  if(location.hostname!=='127.0.0.1')return false;
+  if(!isLoopbackIp)return false;
   const next=`http://localhost:${location.port||4173}${location.pathname}${location.search}${location.hash}`;
   toast('Google login needs localhost instead of 127.0.0.1. Redirecting...');
   setTimeout(()=>location.replace(next),700);
   return true;
+}
+function authDomainHelp(){
+  const host=location.hostname;
+  if(isProductionHost)return `Firebase blocks ${host}. Add ${host} in Firebase Auth authorized domains.`;
+  if(isLocalhost)return 'Firebase blocks this domain. Use http://localhost:4173 and make sure localhost is in Firebase Auth authorized domains.';
+  return `Firebase blocks ${host}. Add ${host} in Firebase Auth authorized domains.`;
 }
 function googleProvider(){
   const provider=new GoogleAuthProvider();
@@ -243,11 +253,9 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
       const email=error.customData?.email||document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
       if(!password){document.getElementById('authEmail').value=email;toast('This email already has an account. Enter its password, then tap Google again.');return}
       try{const signedIn=await signInWithEmailAndPassword(auth,email,password),credential=GoogleAuthProvider.credentialFromError(error);if(credential)await linkWithCredential(signedIn.user,credential);await showUser(signedIn.user);close(authBackdrop);toast('Google linked to your existing account')}catch(linkError){toast(linkError.message.replace('Firebase: ',''))}
-    }else if(error.code==='auth/unauthorized-domain')toast('Firebase blocks this domain. Use http://localhost:4173 or add this domain in Firebase Auth settings.');
+    }else if(error.code==='auth/unauthorized-domain')toast(authDomainHelp());
     else if(['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request'].includes(error.code)&&!auth.currentUser){
-      toast('Popup did not complete. Redirecting to Google sign-in...');
-      await signInWithRedirect(auth,provider);
-      return;
+      toast('Google popup did not complete. Allow popups for this site, then try again.');
     }
     else toast(error.message.replace('Firebase: ',''));
   } finally {
