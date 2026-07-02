@@ -191,6 +191,22 @@ function newsParagraphs(raw='',fallback=''){
   const chunks=(htmlParagraphs.length?htmlParagraphs:plain.split(/(?<=[.!?])\s+/)).map(item=>item.trim()).filter(Boolean);
   return chunks.slice(0,2);
 }
+function cleanNewsImageUrl(value=''){
+  const url=decodeXmlEntities(String(value||'').trim());
+  if(!/^https?:\/\//i.test(url))return '';
+  return url.slice(0,1000);
+}
+function extractNewsImage(item='',content='',description=''){
+  const candidates=[
+    (item.match(/<media:thumbnail\b[^>]*\burl=["']([^"']+)["']/i)||[])[1],
+    (item.match(/<media:content\b[^>]*\burl=["']([^"']+)["'][^>]*\bmedium=["']image["']/i)||[])[1],
+    (item.match(/<media:content\b[^>]*\burl=["']([^"']+)["']/i)||[])[1],
+    (item.match(/<enclosure\b[^>]*\btype=["']image\/[^"']+["'][^>]*\burl=["']([^"']+)["']/i)||[])[1],
+    (item.match(/<enclosure\b[^>]*\burl=["']([^"']+)["'][^>]*\btype=["']image\/[^"']+["']/i)||[])[1],
+    (String(content||description||'').match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)||[])[1]
+  ];
+  return candidates.map(cleanNewsImageUrl).find(Boolean)||'';
+}
 function trustedNewsFallback(){
   const bbc=[
     ['Open BBC latest news','https://www.bbc.com/news'],
@@ -223,8 +239,8 @@ async function fetchTrustedNews(){
       if(!response.ok)throw new Error(`${feed.source} ${response.status}`);
       const xml=await response.text();
       [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0,5).forEach(match=>{
-        const item=match[1],title=stripXml((item.match(/<title>([\s\S]*?)<\/title>/)||[])[1]),link=stripXml((item.match(/<link>([\s\S]*?)<\/link>/)||[])[1]),pubDate=stripXml((item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)||[])[1]),description=(item.match(/<description>([\s\S]*?)<\/description>/)||[])[1],content=(item.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/)||[])[1];
-        if(title&&link)results.push({source:feed.source,title,link,pubDate,paragraphs:newsParagraphs(content,description)});
+        const item=match[1],title=stripXml((item.match(/<title>([\s\S]*?)<\/title>/)||[])[1]),link=stripXml((item.match(/<link>([\s\S]*?)<\/link>/)||[])[1]),pubDate=stripXml((item.match(/<pubDate>([\s\S]*?)<\/pubDate>/)||[])[1]),description=(item.match(/<description>([\s\S]*?)<\/description>/)||[])[1],content=(item.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/)||[])[1],image=extractNewsImage(item,content,description);
+        if(title&&link)results.push({source:feed.source,title,link,pubDate,image,paragraphs:newsParagraphs(content,description)});
       });
     }catch(error){console.warn('Trusted news feed failed:',feed.source,error.message)}
   }
