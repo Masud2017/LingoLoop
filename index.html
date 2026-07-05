@@ -48,6 +48,7 @@
   <link rel="stylesheet" href="student-blog-page.css">
   <link rel="stylesheet" href="layout-polish.css">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7063341847693649" crossorigin="anonymous"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LingoLoop","applicationCategory":"EducationalApplication","description":"Live language practice rooms, student social posts, blogs, study assistant, and community learning tools.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
 </head>
 <body>
@@ -368,6 +369,7 @@
       <p>One account, a whole world of conversations.</p>
       <div class="auth-tabs"><button class="active" data-auth-mode="login">Log in</button><button data-auth-mode="signup">Create account</button></div>
       <button class="google-auth" id="googleAuth"><span class="google-g">G</span> Continue with Google</button>
+      <div class="google-identity-button" id="googleIdentityButton" aria-label="Google sign-in button"></div>
       <div class="auth-divider"><span>or use email</span></div>
       <form id="authForm">
         <label id="usernameField" hidden>Your name<input id="authUsername" autocomplete="name" maxlength="30" placeholder="Your first or display name"></label>
@@ -487,7 +489,7 @@
     </div>
   </aside>
   <script src="app.js"></script>
-  <script type="module" src="auth.js?v=20260705-auth-diagnostic"></script>
+  <script type="module" src="auth.js?v=20260705-gis-auth"></script>
   <script src="friend-chat.js"></script>
   <script src="share.js"></script>
   <script src="profile-page.js"></script>

@@ -1,10 +1,10 @@
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, updateProfile, onAuthStateChanged, signOut, linkWithPopup, linkWithCredential, signInWithCredential, updatePassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import { getDatabase, ref, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
 const configured = !firebaseConfig.apiKey.startsWith('YOUR_');
-const authBuild = '20260705-redirect-only-google-auth';
+const authBuild = '20260705-google-identity-services-auth';
 window.lingoAuthBuild = authBuild;
 console.info(`[LingoLoop] auth build ${authBuild}`);
 const currentHost = location.hostname.toLowerCase();
@@ -27,6 +27,7 @@ const promptedLocationUsers = new Set();
 let mode = 'login';
 let auth = null;
 let database = null;
+let googleIdentityReady = false;
 
 const avatarSeeds = ['Milo','Luna','Koda','Zuri','Nori','Pico','Sage','Mika'];
 const avatarUrl = seed => `https://api.dicebear.com/9.x/thumbs/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
@@ -76,6 +77,50 @@ function googleProvider(){
   const provider=new GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
   return provider;
+}
+function googleClientId(){
+  return firebaseConfig.googleClientId||firebaseConfig.oauthClientId||'';
+}
+async function finishGoogleCredential(credential){
+  const wasLinking=!!auth.currentUser;
+  const result=wasLinking?await linkWithCredential(auth.currentUser,credential):await signInWithCredential(auth,credential);
+  await finishGoogleUser(result.user,wasLinking?'Google connected to your account':'Welcome back');
+}
+function initGoogleIdentity(){
+  const clientId=googleClientId();
+  const container=document.getElementById('googleIdentityButton');
+  if(!clientId||!window.google?.accounts?.id||!container||googleIdentityReady)return false;
+  window.google.accounts.id.initialize({
+    client_id:clientId,
+    callback:async response=>{
+      try{
+        if(!response?.credential)throw new Error('Google did not return an ID token');
+        const credential=GoogleAuthProvider.credential(response.credential);
+        await finishGoogleCredential(credential);
+      }catch(error){
+        const message=`${error.code||'auth/google-identity'}: ${String(error.message||error).replace('Firebase: ','')}`;
+        authStatus(message,'error');
+        toast(message);
+      }
+    },
+    ux_mode:'popup',
+    auto_select:false,
+    cancel_on_tap_outside:true
+  });
+  window.google.accounts.id.renderButton(container,{theme:'outline',size:'large',type:'standard',shape:'pill',text:'continue_with',width:360});
+  googleIdentityReady=true;
+  authStatus('Use the Google button above. This version avoids Firebase redirect storage blocked by Edge tracking prevention.','info');
+  return true;
+}
+function waitForGoogleIdentity(ms=2500){
+  return new Promise(resolve=>{
+    if(initGoogleIdentity())return resolve(true);
+    const started=Date.now();
+    const timer=setInterval(()=>{
+      if(initGoogleIdentity()){clearInterval(timer);resolve(true)}
+      else if(Date.now()-started>ms){clearInterval(timer);resolve(false)}
+    },100);
+  });
 }
 async function finishGoogleUser(user,message='Welcome back'){
   if(!user.photoURL)await updateProfile(user,{photoURL:randomAvatar()});
@@ -246,6 +291,7 @@ if (configured) {
   const app = initializeApp(firebaseConfig); auth = getAuth(app); database = getDatabase(app);
   setPersistence(auth,browserLocalPersistence).catch(error=>console.warn('Auth persistence failed',error));
   onAuthStateChanged(auth, async user => { if(user) await showUser(user); else { document.body.classList.remove('logged-in'); window.lingoUser=null; window.dispatchEvent(new CustomEvent('lingo-auth-changed',{detail:null})); profileChip.hidden=true;if(openMyProfileShortcut)openMyProfileShortcut.hidden=true; document.getElementById('authLogin').hidden=false; document.getElementById('openSignup').hidden=false; } });
+  waitForGoogleIdentity();
   getRedirectResult(auth).then(async result=>{
     const started=sessionStorage.getItem('lingo-google-auth-started');
     if(!result?.user){
@@ -284,9 +330,18 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
   const wasLinking=!!auth.currentUser;
   try {
     button.disabled=true;
-    button.textContent=wasLinking?'Opening Google...':'Redirecting to Google...';
-    if(!wasLinking){
-      await redirectToGoogle(provider);
+    button.textContent='Opening Google...';
+    const hasGis=await waitForGoogleIdentity();
+    if(hasGis&&!wasLinking&&window.google?.accounts?.id){
+      window.google.accounts.id.prompt(notification=>{
+        if(notification?.isNotDisplayed?.()||notification?.isSkippedMoment?.()){
+          authStatus('If the One Tap prompt does not appear, use the Google button shown inside this login box.','info');
+        }
+      });
+      return;
+    }
+    if(!hasGis&&!wasLinking){
+      authStatus('Google Identity Services did not load. Check browser tracking protection, extensions, and that this OAuth client allows the current website origin.','error');
       return;
     }
     const result=await linkWithPopup(auth.currentUser,provider);
