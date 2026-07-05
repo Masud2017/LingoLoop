@@ -36,6 +36,13 @@ function toast(message) {
   const element = document.getElementById('toast'); element.textContent = message; element.classList.add('show');
   clearTimeout(toast.timer); toast.timer = setTimeout(() => element.classList.remove('show'), 3000);
 }
+function authStatus(message,type='info'){
+  const note=document.getElementById('authNote');
+  if(!note)return;
+  note.hidden=false;
+  note.dataset.type=type;
+  note.textContent=message;
+}
 function open(backdrop) { backdrop.classList.add('open'); backdrop.setAttribute('aria-hidden','false'); }
 function close(backdrop) { backdrop.classList.remove('open'); backdrop.setAttribute('aria-hidden','true'); }
 function openAuthModal(next='login'){setMode(next);open(authBackdrop);setTimeout(()=>document.getElementById('googleAuth')?.focus(),80)}
@@ -79,6 +86,8 @@ async function finishGoogleUser(user,message='Welcome back'){
 async function redirectToGoogle(provider){
   sessionStorage.setItem('lingo-google-auth-origin',location.origin);
   sessionStorage.setItem('lingo-google-auth-path',`${location.pathname}${location.search}${location.hash}`);
+  sessionStorage.setItem('lingo-google-auth-started',String(Date.now()));
+  authStatus(`Google sign-in redirect started on ${location.hostname}. If it returns without logging in, Firebase redirect storage may be blocked or this domain is not authorized.`,'info');
   toast('Opening Google sign-in on this domain...');
   await signInWithRedirect(auth,provider);
 }
@@ -237,7 +246,21 @@ if (configured) {
   const app = initializeApp(firebaseConfig); auth = getAuth(app); database = getDatabase(app);
   setPersistence(auth,browserLocalPersistence).catch(error=>console.warn('Auth persistence failed',error));
   onAuthStateChanged(auth, async user => { if(user) await showUser(user); else { document.body.classList.remove('logged-in'); window.lingoUser=null; window.dispatchEvent(new CustomEvent('lingo-auth-changed',{detail:null})); profileChip.hidden=true;if(openMyProfileShortcut)openMyProfileShortcut.hidden=true; document.getElementById('authLogin').hidden=false; document.getElementById('openSignup').hidden=false; } });
-  getRedirectResult(auth).then(async result=>{if(!result?.user)return;sessionStorage.removeItem('lingo-google-auth-origin');sessionStorage.removeItem('lingo-google-auth-path');await finishGoogleUser(result.user,'Welcome back')}).catch(error=>toast(error.code==='auth/unauthorized-domain'?authDomainHelp():error.message.replace('Firebase: ','')));
+  getRedirectResult(auth).then(async result=>{
+    const started=sessionStorage.getItem('lingo-google-auth-started');
+    if(!result?.user){
+      if(started)authStatus(`Google returned, but Firebase did not provide a signed-in user on ${location.hostname}. Check Firebase Auth authorized domains and Google provider settings.`, 'error');
+      return;
+    }
+    sessionStorage.removeItem('lingo-google-auth-origin');
+    sessionStorage.removeItem('lingo-google-auth-path');
+    sessionStorage.removeItem('lingo-google-auth-started');
+    await finishGoogleUser(result.user,'Welcome back');
+  }).catch(error=>{
+    const message=error.code==='auth/unauthorized-domain'?authDomainHelp():`${error.code||'auth/error'}: ${error.message.replace('Firebase: ','')}`;
+    authStatus(message,'error');
+    toast(message);
+  });
   document.getElementById('authNote').hidden = true;
 }
 
@@ -273,12 +296,12 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
       const email=error.customData?.email||document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
       if(!password){document.getElementById('authEmail').value=email;toast('This email already has an account. Enter its password, then tap Google again.');return}
       try{const signedIn=await signInWithEmailAndPassword(auth,email,password),credential=GoogleAuthProvider.credentialFromError(error);if(credential)await linkWithCredential(signedIn.user,credential);await showUser(signedIn.user);close(authBackdrop);toast('Google linked to your existing account')}catch(linkError){toast(linkError.message.replace('Firebase: ',''))}
-    }else if(error.code==='auth/unauthorized-domain')toast(authDomainHelp());
+    }else if(error.code==='auth/unauthorized-domain'){const message=authDomainHelp();authStatus(message,'error');toast(message)}
     else if(['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request'].includes(error.code)&&!auth.currentUser){
       await redirectToGoogle(provider);
       return;
     }
-    else toast(error.message.replace('Firebase: ',''));
+    else {const message=`${error.code||'auth/error'}: ${error.message.replace('Firebase: ','')}`;authStatus(message,'error');toast(message)}
   } finally {
     button.disabled=false;
     button.innerHTML='<span class="google-g">G</span> Continue with Google';
