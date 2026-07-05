@@ -4,6 +4,9 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { getDatabase, ref, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
 const configured = !firebaseConfig.apiKey.startsWith('YOUR_');
+const authBuild = '20260705-redirect-only-google-auth';
+window.lingoAuthBuild = authBuild;
+console.info(`[LingoLoop] auth build ${authBuild}`);
 const currentHost = location.hostname.toLowerCase();
 const isLoopbackIp = currentHost === '127.0.0.1';
 const isLocalhost = currentHost === 'localhost' || isLoopbackIp;

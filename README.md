@@ -50,6 +50,24 @@ After deploy, copy your Render URL, for example `https://your-app.onrender.com`,
 
 The Render service uses a persistent disk mounted at `/app/data` so JSON runtime data can survive deploys and restarts.
 
+To verify the latest Google auth fix is live, open your deployed page source and confirm it contains:
+
+```html
+auth.js?v=20260705-redirect-only
+```
+
+In the browser console, this should also exist:
+
+```js
+window.lingoAuthBuild
+```
+
+It should print:
+
+```text
+20260705-redirect-only-google-auth
+```
+
 ## Included
 
 - Responsive landing page and live-room directory
