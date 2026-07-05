@@ -4,7 +4,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { getDatabase, ref, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
 
 const configured = !firebaseConfig.apiKey.startsWith('YOUR_');
-const authBuild = '20260705-google-identity-services-auth';
+const authBuild = '20260705-google-identity-loader-auth';
 window.lingoAuthBuild = authBuild;
 console.info(`[LingoLoop] auth build ${authBuild}`);
 const currentHost = location.hostname.toLowerCase();
@@ -28,6 +28,7 @@ let mode = 'login';
 let auth = null;
 let database = null;
 let googleIdentityReady = false;
+let googleIdentityScriptPromise = null;
 
 const avatarSeeds = ['Milo','Luna','Koda','Zuri','Nori','Pico','Sage','Mika'];
 const avatarUrl = seed => `https://api.dicebear.com/9.x/thumbs/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
@@ -81,6 +82,26 @@ function googleProvider(){
 function googleClientId(){
   return firebaseConfig.googleClientId||firebaseConfig.oauthClientId||'';
 }
+function loadGoogleIdentityScript(){
+  if(window.google?.accounts?.id)return Promise.resolve(true);
+  if(googleIdentityScriptPromise)return googleIdentityScriptPromise;
+  googleIdentityScriptPromise=new Promise(resolve=>{
+    const existing=[...document.scripts].find(script=>script.src.includes('accounts.google.com/gsi/client'));
+    const script=existing||document.createElement('script');
+    let done=false;
+    const finish=value=>{if(done)return;done=true;resolve(value)};
+    script.addEventListener('load',()=>finish(true),{once:true});
+    script.addEventListener('error',()=>finish(false),{once:true});
+    if(!existing){
+      script.src='https://accounts.google.com/gsi/client';
+      script.async=true;
+      script.defer=true;
+      document.head.appendChild(script);
+    }
+    setTimeout(()=>finish(!!window.google?.accounts?.id),9000);
+  });
+  return googleIdentityScriptPromise;
+}
 async function finishGoogleCredential(credential){
   const wasLinking=!!auth.currentUser;
   const result=wasLinking?await linkWithCredential(auth.currentUser,credential):await signInWithCredential(auth,credential);
@@ -112,7 +133,8 @@ function initGoogleIdentity(){
   authStatus('Use the Google button above. This version avoids Firebase redirect storage blocked by Edge tracking prevention.','info');
   return true;
 }
-function waitForGoogleIdentity(ms=2500){
+async function waitForGoogleIdentity(ms=10000){
+  await loadGoogleIdentityScript();
   return new Promise(resolve=>{
     if(initGoogleIdentity())return resolve(true);
     const started=Date.now();
@@ -291,7 +313,7 @@ if (configured) {
   const app = initializeApp(firebaseConfig); auth = getAuth(app); database = getDatabase(app);
   setPersistence(auth,browserLocalPersistence).catch(error=>console.warn('Auth persistence failed',error));
   onAuthStateChanged(auth, async user => { if(user) await showUser(user); else { document.body.classList.remove('logged-in'); window.lingoUser=null; window.dispatchEvent(new CustomEvent('lingo-auth-changed',{detail:null})); profileChip.hidden=true;if(openMyProfileShortcut)openMyProfileShortcut.hidden=true; document.getElementById('authLogin').hidden=false; document.getElementById('openSignup').hidden=false; } });
-  waitForGoogleIdentity();
+  waitForGoogleIdentity(12000);
   getRedirectResult(auth).then(async result=>{
     const started=sessionStorage.getItem('lingo-google-auth-started');
     if(!result?.user){
@@ -331,7 +353,8 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
   try {
     button.disabled=true;
     button.textContent='Opening Google...';
-    const hasGis=await waitForGoogleIdentity();
+    authStatus('Loading Google sign-in...', 'info');
+    const hasGis=await waitForGoogleIdentity(12000);
     if(hasGis&&!wasLinking&&window.google?.accounts?.id){
       window.google.accounts.id.prompt(notification=>{
         if(notification?.isNotDisplayed?.()||notification?.isSkippedMoment?.()){
@@ -341,7 +364,7 @@ document.getElementById('googleAuth').addEventListener('click', async () => {
       return;
     }
     if(!hasGis&&!wasLinking){
-      authStatus('Google Identity Services did not load. Check browser tracking protection, extensions, and that this OAuth client allows the current website origin.','error');
+      authStatus('Google Identity Services could not load. In Edge, set Tracking prevention to Balanced for this site or allow accounts.google.com. Also confirm this OAuth client allows https://lingoloop.space as a JavaScript origin.','error');
       return;
     }
     const result=await linkWithPopup(auth.currentUser,provider);
