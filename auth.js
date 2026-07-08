@@ -47,7 +47,7 @@ function authStatus(message,type='info'){
 }
 function open(backdrop) { backdrop.classList.add('open'); backdrop.setAttribute('aria-hidden','false'); }
 function close(backdrop) { backdrop.classList.remove('open'); backdrop.setAttribute('aria-hidden','true'); }
-function openAuthModal(next='login'){setMode(next);open(authBackdrop);setTimeout(()=>document.getElementById('googleAuth')?.focus(),80)}
+function openAuthModal(next='login'){setMode(next);open(authBackdrop);setTimeout(()=>document.querySelector('#googleIdentityButton iframe')?.focus(),120)}
 function providerIds(user=auth?.currentUser){return user?.providerData.map(provider=>provider.providerId)||[]}
 function updateSettingsState(){const user=auth?.currentUser;if(!user)return;const hasPassword=providerIds(user).includes('password'),hasGoogle=providerIds(user).includes('google.com');document.getElementById('currentPasswordField').hidden=!hasPassword;document.getElementById('currentPassword').required=hasPassword;document.getElementById('passwordModeHelp').textContent=hasPassword?'Change your existing password.':'Create a password so you can also sign in with email.';document.getElementById('providerStatus').textContent=hasGoogle?'Google is connected to this account.':'Google is not connected yet.';document.getElementById('linkGoogleAccount').disabled=hasGoogle}
 function setMode(next) {
@@ -130,7 +130,7 @@ function initGoogleIdentity(){
   });
   window.google.accounts.id.renderButton(container,{theme:'outline',size:'large',type:'standard',shape:'pill',text:'continue_with',width:360});
   googleIdentityReady=true;
-  authStatus('Use the Google button above. This version avoids Firebase redirect storage blocked by Edge tracking prevention.','info');
+  authStatus('Use the Google button below. This version avoids Firebase redirect storage blocked by Edge tracking prevention.','info');
   return true;
 }
 async function waitForGoogleIdentity(ms=10000){
@@ -343,47 +343,6 @@ authForm.addEventListener('submit', async event => {
     } else await signInWithEmailAndPassword(auth,email,password);
     close(authBackdrop); authForm.reset();
   } catch(error) { toast(error.message.replace('Firebase: ','').replace(/\s*\(auth\/.*\)\.?$/,'')); }
-});
-document.getElementById('googleAuth').addEventListener('click', async () => {
-  if(!requireConfig()) return;
-  if(useAuthorizedLocalhostForGoogle())return;
-  const button=document.getElementById('googleAuth');
-  const provider=googleProvider();
-  const wasLinking=!!auth.currentUser;
-  try {
-    button.disabled=true;
-    button.textContent='Opening Google...';
-    authStatus('Loading Google sign-in...', 'info');
-    const hasGis=await waitForGoogleIdentity(12000);
-    if(hasGis&&!wasLinking&&window.google?.accounts?.id){
-      window.google.accounts.id.prompt(notification=>{
-        if(notification?.isNotDisplayed?.()||notification?.isSkippedMoment?.()){
-          authStatus('If the One Tap prompt does not appear, use the Google button shown inside this login box.','info');
-        }
-      });
-      return;
-    }
-    if(!hasGis&&!wasLinking){
-      authStatus('Google Identity Services could not load. In Edge, set Tracking prevention to Balanced for this site or allow accounts.google.com. Also confirm this OAuth client allows https://lingoloop.space as a JavaScript origin.','error');
-      return;
-    }
-    const result=await linkWithPopup(auth.currentUser,provider);
-    await finishGoogleUser(result.user,wasLinking?'Google connected to your account':'Welcome back');
-  } catch(error){
-    if(error.code==='auth/account-exists-with-different-credential'){
-      const email=error.customData?.email||document.getElementById('authEmail').value.trim(),password=document.getElementById('authPassword').value;
-      if(!password){document.getElementById('authEmail').value=email;toast('This email already has an account. Enter its password, then tap Google again.');return}
-      try{const signedIn=await signInWithEmailAndPassword(auth,email,password),credential=GoogleAuthProvider.credentialFromError(error);if(credential)await linkWithCredential(signedIn.user,credential);await showUser(signedIn.user);close(authBackdrop);toast('Google linked to your existing account')}catch(linkError){toast(linkError.message.replace('Firebase: ',''))}
-    }else if(error.code==='auth/unauthorized-domain'){const message=authDomainHelp();authStatus(message,'error');toast(message)}
-    else if(['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request'].includes(error.code)&&!auth.currentUser){
-      await redirectToGoogle(provider);
-      return;
-    }
-    else {const message=`${error.code||'auth/error'}: ${error.message.replace('Firebase: ','')}`;authStatus(message,'error');toast(message)}
-  } finally {
-    button.disabled=false;
-    button.innerHTML='<span class="google-g">G</span> Continue with Google';
-  }
 });
 window.openLingoAuth=openAuthModal;
 document.getElementById('signOutButton').addEventListener('click', async () => { if(auth) await signOut(auth); close(profileBackdrop); toast('Signed out'); });
