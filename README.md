@@ -50,6 +50,22 @@ After deploy, copy your Render URL, for example `https://your-app.onrender.com`,
 
 The Render service uses a persistent disk mounted at `/app/data` so JSON runtime data can survive deploys and restarts.
 
+## CI/CD
+
+GitHub Actions pipeline:
+
+```text
+.github/workflows/ci-cd.yml
+```
+
+It validates JavaScript/JSON, builds the Docker image, and can trigger Render deployment when the GitHub secret `RENDER_DEPLOY_HOOK_URL` is configured.
+
+Rollback and backup details are documented in:
+
+```text
+CI_CD_ROLLBACK.md
+```
+
 To verify the latest Google auth fix is live, open your deployed page source and confirm it contains:
 
 ```html
